@@ -1,0 +1,10 @@
+django
+djangorestframework
+ django-cors-headers
+ djangorestframework-simplejwt
+ django-redis
+ psycopg2
+ google-auth
+ google-auth-oauthlib
+ google-auth-httplib2
+ google-api-python-client

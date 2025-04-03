@@ -1,0 +1,13 @@
+./
+.gitignore
+.vcr/
+.vcr/index
+.vcr.ignore
+commands/
+commands/command_list.go
+commands/methods/
+commands/methods/methods.go
+configs/
+configs/config.go
+main.go
+z/
