@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-u+)fehsdv(_hf7bwx=(72z=kwwmg6&dqxf6joy4llk*4e29gc7"
+SECRET_KEY = "django-insecure-lltd3b)*ia!iy+sq*s!-&bngg^ux8wpbp8yu##7uw!yw=ds%o7"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "server"
 ]
 
 MIDDLEWARE = [
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
 ]
 
 ROOT_URLCONF = "root.urls"
@@ -67,17 +70,27 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "root.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+AUTH_USER_MODEL='server.UserModel'
+SIMPLE_JWT={
+    'ACCESS_TOKEN_LIFETIME':timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME':timedelta(days=30)
+}
+REST_FRAMEWORK={
+      'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'git_cli',
+        'USER': 'postgres',
+        'PASSWORD': '9843',
+        'HOST': 'localhost',  # or your remote database host
+        'PORT': '5432',       # Default PostgreSQL port
     }
 }
+
 
 
 # Password validation

@@ -1,15 +1,29 @@
 from googleapiclient.discovery import Resource
 from io import BytesIO
-from app.configs.google_drive.drive_service import get_drive_service
+
 from googleapiclient.http import MediaIoBaseUpload
 from django.core.files.uploadedfile import UploadedFile
+from asgiref.sync import sync_to_async
+from server.configs.google_drive.drive_service import get_drive_service
+folder_id = "1dqjBHDHoxRtfCZ-QQ3QBpB_poWpnhC4a" 
+
+def create_user_folder(user_id:str)->str:
+    drive_service=get_drive_service()
+    folder_metadata = {
+        'name': f"user_{user_id}_folder",  
+        'mimeType': 'application/vnd.google-apps.folder',
+        'parents': [folder_id]
+    }
+    created_folder_id=drive_service.files().create(body=folder_metadata,fields='id').execute()
+    return created_folder_id.get('id')
+
 
 def upload_to_drive(file:UploadedFile)->str:
     #Drive resource for uploading the file
     drive_service:Resource=get_drive_service()
     #This is a folder id obtained through shared link where All the uploaded files will be saved in the 
     # personal drive.
-    folder_id = "1dqjBHDHoxRtfCZ-QQ3QBpB_poWpnhC4a" 
+   
 
     file_metadata={
         'name':file.name,
