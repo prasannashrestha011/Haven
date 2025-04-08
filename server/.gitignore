@@ -1,4 +1,5 @@
 __pycache__/
 **/__pycache__/
 .venv/
-app/configs/google_drive/credentials.json
+server/configs/google_drive/credentials.json
+.env

@@ -1,3 +1,4 @@
+import zipfile
 from googleapiclient.discovery import Resource
 from io import BytesIO
 
@@ -41,4 +42,32 @@ def upload_to_drive(file:UploadedFile)->str:
     uploaded_file=drive_service.files().create(body=file_metadata,
                                               media_body=media,
                                               fields='id').execute()
+    return uploaded_file.get('id')
+
+def upload_zip_to_drive(zip_stream: BytesIO, name: str) -> str:
+    if zip_stream is None:
+        raise ValueError("zip_stream cannot be None")
+    
+    drive_service: Resource = get_drive_service()
+
+    # Rewind the stream before reading
+    zip_stream.seek(0)
+
+    file_metadata = {
+        'name': name,
+        'parents': [folder_id],
+    }
+
+    media = MediaIoBaseUpload(
+        zip_stream,
+        mimetype='application/zip',
+        resumable=True
+    )
+
+    uploaded_file = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+
     return uploaded_file.get('id')

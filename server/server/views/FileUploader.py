@@ -9,11 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 
 class FileParserView(APIView):
     permission_classes=[IsAuthenticated]
-    async def get(self,req:Request):
+    def get(self,req:Request):
         user=req.query_params.get("user")
         return Response({"name":user})  
     
-    async def post(self,req:Request):
+    def post(self,req:Request):
         user_id=req.query_params.get("userID")
         body=FileSerializer(data=req.data)
         if not body.is_valid():
