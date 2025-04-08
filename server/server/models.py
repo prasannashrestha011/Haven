@@ -39,8 +39,8 @@ class DirectoryModel(models.Model):
 
 class FileModel(models.Model):
     fileID=models.UUIDField(default=uuid.uuid4,unique=True,primary_key=True)
-    fileName=models.CharField(unique=True,max_length=255,blank=False)
+    fileName=models.CharField(unique=False,max_length=255,blank=False)
     directory=models.ForeignKey(DirectoryModel,on_delete=models.CASCADE,null=True,blank=True)
-    repository=models.ForeignKey(RepositoryModel,on_delete=models.CASCADE,null=True,blank=True)
+    repo=models.ForeignKey(RepositoryModel,on_delete=models.CASCADE,null=True,blank=True)
     class Meta:
         db_table='files'

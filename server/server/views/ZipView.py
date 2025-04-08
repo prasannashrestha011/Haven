@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import uuid
 import zipfile
@@ -9,48 +10,32 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from server.models import RepositoryModel,DirectoryModel
+from server.methods.ZipMethods import fetch_repo, insert_repo_details
+from server.models import FileModel, RepositoryModel,DirectoryModel
 
 
 class ZipView(APIView):
     permission_classes = [AllowAny]
+    def get(self, req: Request):
+        repo_name = req.query_params.get('repo')
+        user = req.query_params.get('user')
+
+        if not repo_name or not user:
+            return Response({"message": "Repository name and user are required"}, status=400)
+
+        response_data=fetch_repo(user=user,repo_name=repo_name)
+
+        return Response(response_data, status=200)
 
     def post(self, req: Request):
-        file_struct={}
-        zip=req.FILES.get('zip')
-        user=req.query_params.get('user')
-        repo_name=req.query_params.get('repo')
-        if not zip:
-            return Response({"message":"no zip file found"},status=400)
-        temp_dir=tempfile.mkdtemp()
-        with zipfile.ZipFile(zip.file,'r') as zip_ref:
-            zip_ref.extractall(temp_dir)
+        zip_file = req.FILES.get('zip')
+        user = req.query_params.get('user')
+        repo_name = req.query_params.get('repo')
 
-        repo=RepositoryModel.objects.create(name=repo_name,owner=user)
+        if not zip_file or not user:
+            return Response({"message": "No zip or username file found"}, status=400)
 
-        with transaction.atomic():
-            for root,dirs,files in os.walk(temp_dir):
-              
-               for file in files: 
-                 
-                 path=os.path.join(root,file)          
-                 rel_file_path=os.path.relpath(path,start=temp_dir)
-                 parent_dir=os.path.dirname(rel_file_path)
-                 
-                 #getting filename 
-                 filename=os.path.basename(rel_file_path)
-                 
-                 folder,created=DirectoryModel.objects.get_or_create(
-                     repo=repo,
-                 )
-                 if not created:
-                     DirectoryModel(
-                         repo=repo
-                     )
-                 if parent_dir not in file_struct:
-                     file_struct[parent_dir]=[]
-
-                 file_struct[parent_dir].append(filename)
-                    
-               
-        return Response({"message":file_struct},status=200)
+        response_data=insert_repo_details(zip_file=zip_file,
+                                         user=user,
+                                         repo_name=repo_name)
+        return Response({"message":response_data["message"]},status=response_data["status"])
