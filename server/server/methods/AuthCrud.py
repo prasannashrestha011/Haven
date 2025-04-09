@@ -1,0 +1,74 @@
+from server.methods.DropBoxCrud import DropBoxService
+from server.models import UserModel, UserStorageReference
+
+from django.contrib.auth.hashers import check_password
+
+from server.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
+
+
+class AuthCrud:
+
+    @staticmethod
+    def register_user(user_details):
+        try:
+            print(user_details)
+            req_body = RegisterSerializer(data=user_details)
+            if not req_body.is_valid():  # This catches "Username already exists" error
+                return {
+                    "response": {"error": req_body.errors},
+                    "status": 400,
+                }
+
+            AuthCrud.catch_field_error(req_body)
+
+            user_model = UserModel.objects.create(**req_body.validated_data)
+
+            # Create the associated storage reference
+            storage_reference = UserStorageReference.objects.create(user=user_model)
+
+            # Initialize user folder (e.g., on Dropbox)
+            folder_id = DropBoxService.Init_User_Storage(storage_reference.storageID)
+
+            return {
+                "response": {
+                    "message": "Account registered",
+                    "userId": user_model.userId,
+                    "storage_referenceID:": storage_reference.storageID,
+                },
+                "status": 201,
+            }
+
+        except Exception as e:
+            print(e)
+            return {"response": {"error": e}, "status": 500}
+
+    @staticmethod
+    def delete_user(user_details):
+        try:
+            validated_body = LoginSerializer(data=user_details)
+            AuthCrud.catch_field_error(validated_body)
+
+            username = validated_body.validated_data.get("username")
+            password = validated_body.validated_data.get("password")
+            auth_user = UserModel.objects.get(username=username)
+
+        except UserModel.DoesNotExist:
+            return {"error": "User not found", "status": 404}
+        # performing authentication
+        try:
+            is_authenticated = check_password(password, auth_user.password)
+
+            if not is_authenticated:
+                return {"error": "Invalid username or password", "status": 401}
+
+            DropBoxService.Delete_User_Storage(auth_user.userId)
+            auth_user.delete()
+        except Exception as e:
+            return {"response": {"error": str(e)}, "status": 500}
+
+        return {"response": {"message": "User deleted successfully"}, "status": 200}
+
+    @staticmethod
+    def catch_field_error(req_body):
+        if not req_body.is_valid():
+            return {"error": req_body.error_messages, "status": 400}

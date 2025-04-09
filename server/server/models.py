@@ -1,8 +1,9 @@
-from typing import Optional
+
 from django.utils import timezone
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from server.utils.uuid_generator import generate_short_uuid
 
 #user model
 class UserModel(AbstractUser):
@@ -14,7 +15,16 @@ class UserModel(AbstractUser):
     folder_link=models.CharField(null=True,blank=True)
     class Meta:
         db_table='users'
-        
+
+class UserStorageReference(models.Model):
+    storageID=models.CharField(primary_key=True,default=generate_short_uuid)
+    user=models.ForeignKey(UserModel,on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.storageID}-{self.user.username}"
+    class Meta:
+        db_table='users_storage_reference'
+
 class UserFolders(models.Model):
     user=models.ForeignKey(UserModel,on_delete=models.CASCADE)
     folderLink=models.CharField(null=False,blank=False)
