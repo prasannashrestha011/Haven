@@ -15,6 +15,7 @@ urlpatterns = [
     # repo routes
     path("file", FileParserView.as_view()),
     path("repo/init", ZipView.as_view({"post": "init_repo"})),
+    path("repo/insert", ZipView.as_view({"post": "insert_repo"})),
     path("repo/details", ZipView.as_view({"get": "get_repo_details"})),
     path("repo/delete/all", ZipView.as_view({"post": "delete_all_repos"})),
     path("dropbox/oauth/", dropbox_oauth, name="dropbox_oauth"),

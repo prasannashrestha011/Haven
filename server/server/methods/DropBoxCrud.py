@@ -96,26 +96,28 @@ class DropBoxService:
             folder_path = f"{os.getenv("WORKING_DIR")}/{user_storage_ref}/{repo_name}"
             response = dbx.files_create_folder_v2(folder_path)
             print(response)
-            return {"message": response.metadata.path_lower}
+            return {
+                "response": {"message": response.metadata.path_lower},
+                "status": 201,
+            }
         except dropbox.exceptions.ApiError as e:
             # Handle the case where the folder already exists
             if e.error.is_path() and e.error.get_path().is_conflict():
                 return {
                     "status": "exists",
-                    "message": f"Folder '{folder_path}' already exists.",
+                    "response": {
+                        "message": f"Folder '{folder_path}' already exists.",
+                    },
                 }
             else:
-                return {"status": "error", "message": str(e)}
+                return {"status": "error", "response": {"message": str(e)}}
 
     @staticmethod
-    def Upload_Dir(zip_stream: zipfile.ZipFile, repo_name: str):
+    def Insert_Repo(zip_stream: zipfile.ZipFile, repo_path: str):
         try:
             dbx = get_dropbox_service()
             working_dir = os.getenv("WORKING_DIR")
-            folder_path = f"{working_dir}/{repo_name}"
-
-            # Create the target folder in Dropbox
-            dbx.files_create_folder_v2(folder_path)
+            folder_path = f"{working_dir}/{repo_path}"
 
             # Read the uploaded file content into memory
             file_content = zip_stream.read()
@@ -128,9 +130,13 @@ class DropBoxService:
                             dbx_path = f"{folder_path}/{file_info.filename}"
                             dbx.files_upload(file.read(), dbx_path)
 
-            return {"status": "success", "message": "Files uploaded successfully"}
+            return {
+                "status": 200,
+                "response": {"message": "Files uploaded successfully"},
+            }
 
         except dropbox.exceptions.ApiError as e:
-            return {"status": "error", "message": str(e)}
+            print(e)
+            return {"status": 400, "response": {"message": str(e)}}
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {"status": 500, "response": {"message": str(e)}}

@@ -13,6 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from server.methods import DropBoxCrud
 from server.methods.DropBoxCrud import DropBoxService
 from server.methods.ZipMethods import fetch_repo, insert_repo_details
 
@@ -45,6 +46,13 @@ class ZipView(ViewSet):
             repo_name=repo_name, user_storage_ref=storage_ref
         )
         return Response(response, status=201)
+
+    def insert_repo(self, req: Request):
+        # "message": "/users/qvtyl46ir-mp0r7jzwlrmg/django_app"
+        repo_path = req.query_params.get("repo_path")
+        repo_zip = req.FILES.get("repo_zip")
+        response = DropBoxService.Insert_Repo(zip_stream=repo_zip, repo_path=repo_path)
+        return Response(response["response"], status=response["status"])
 
     def delete_all_repos(self, req: Request):
         response = DropBoxService.Delete_All_From_Working_Dir()
