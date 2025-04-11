@@ -1,10 +1,3 @@
-import django.core.files.uploadedfile
-import os
-import rest_framework.viewsets
-import shutil
-import tempfile
-import uuid
-import zipfile
 from django.conf import settings
 from django.db import transaction
 
@@ -37,18 +30,19 @@ class ZipView(ViewSet):
     def init_repo(self, req: Request):
         repo_name = req.query_params.get("repo")
         storage_ref = req.query_params.get("storage_ref")
+        username = req.query_params.get("username")
         if not repo_name or not storage_ref:
             return Response(
                 {"error": "repo name or userID is not provided"}, status=400
             )
 
         response = DropBoxService.Init_Repo_Dir(
-            repo_name=repo_name, user_storage_ref=storage_ref
+            repo_name=repo_name, user_storage_ref=storage_ref, username=username
         )
         return Response(response, status=201)
 
     def insert_repo(self, req: Request):
-        # "message": "/users/qvtyl46ir-mp0r7jzwlrmg/django_app"
+
         repo_path = req.query_params.get("repo_path")
         repo_zip = req.FILES.get("repo_zip")
         response = DropBoxService.Insert_Repo(zip_stream=repo_zip, repo_path=repo_path)

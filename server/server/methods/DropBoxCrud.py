@@ -2,6 +2,7 @@ from email import message
 from importlib.metadata import files
 from io import BytesIO
 import os
+
 import zipfile
 
 from dotenv import load_dotenv
@@ -9,7 +10,9 @@ import dropbox
 import dropbox.exceptions
 
 from server.configs.dropbox.config import get_dropbox_service
-from server.models import UserModel, UserStorageReference
+from server.methods.RepoDatabaseHandler import Insert_Repo_Structure
+from server.methods.database.RepositoryDatabaseService import RepoDbService
+from server.models import RepositoryModel, UserModel, UserStorageReference
 
 load_dotenv()
 
@@ -89,20 +92,33 @@ class DropBoxService:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
+    # methods related to repository
+
     @staticmethod
-    def Init_Repo_Dir(repo_name: str, user_storage_ref: str) -> dict:
+    def Init_Repo_Dir(repo_name: str, user_storage_ref: str, username: str) -> dict:
+        is_storageRef_exists = RepoDbService.is_user_storage_ref_valid(user_storage_ref)
+        if not is_storageRef_exists:
+            return {"response": {"error": "storage reference not found"}, "status": 404}
         try:
             dbx = get_dropbox_service()
             folder_path = f"{os.getenv("WORKING_DIR")}/{user_storage_ref}/{repo_name}"
             response = dbx.files_create_folder_v2(folder_path)
+            print("Response->", response)
+            repo_path = response.metadata.path_lower
+
+            RepositoryModel.objects.create(
+                owner=username, name=repo_name, repo_path=repo_path
+            )
             print(response)
             return {
                 "response": {"message": response.metadata.path_lower},
                 "status": 201,
             }
+
         except dropbox.exceptions.ApiError as e:
             # Handle the case where the folder already exists
             if e.error.is_path() and e.error.get_path().is_conflict():
+
                 return {
                     "status": "exists",
                     "response": {
@@ -130,13 +146,17 @@ class DropBoxService:
                             dbx_path = f"{folder_path}/{file_info.filename}"
                             dbx.files_upload(file.read(), dbx_path)
 
+            response = Insert_Repo_Structure(
+                zip_stream=zip_stream, repo_path=folder_path
+            )
+
             return {
-                "status": 200,
-                "response": {"message": "Files uploaded successfully"},
+                "status": response["status"],
+                "response": response["response"],
             }
 
         except dropbox.exceptions.ApiError as e:
             print(e)
             return {"status": 400, "response": {"message": str(e)}}
         except Exception as e:
-            return {"status": 500, "response": {"message": str(e)}}
+            return {"status": 500, "response": {"error": str(e)}}
