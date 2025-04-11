@@ -1,9 +1,11 @@
+from django.shortcuts import get_object_or_404
 from server.methods.DropBoxCrud import DropBoxService
 from server.models import UserModel, UserStorageReference
 
 from django.contrib.auth.hashers import check_password
 
 from server.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
+from server.utils.ResponseBody import ResponseBody
 
 
 class AuthCrud:
@@ -53,7 +55,7 @@ class AuthCrud:
             auth_user = UserModel.objects.get(username=username)
 
         except UserModel.DoesNotExist:
-            return {"error": "User not found", "status": 404}
+            return {"response": {"error": "User not found"}, "status": 404}
         # performing authentication
         try:
             is_authenticated = check_password(password, auth_user.password)
@@ -63,10 +65,11 @@ class AuthCrud:
 
             DropBoxService.Delete_User_Storage(auth_user.userId)
             auth_user.delete()
+            return ResponseBody.build(
+                {"message": "User deleted successfully"}, status=200
+            )
         except Exception as e:
             return {"response": {"error": str(e)}, "status": 500}
-
-        return {"response": {"message": "User deleted successfully"}, "status": 200}
 
     @staticmethod
     def catch_field_error(req_body):

@@ -17,6 +17,7 @@ urlpatterns = [
     path("repo/init", ZipView.as_view({"post": "init_repo"})),
     path("repo/insert", ZipView.as_view({"post": "insert_repo"})),
     path("repo/details", ZipView.as_view({"get": "get_repo_details"})),
+    path("repo/delete", ZipView.as_view({"delete": "delete_repo"})),
     path("repo/delete/all", ZipView.as_view({"post": "delete_all_repos"})),
     path("dropbox/oauth/", dropbox_oauth, name="dropbox_oauth"),
     path(

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import transaction
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -12,7 +12,7 @@ from server.methods.ZipMethods import fetch_repo, insert_repo_details
 
 
 class ZipView(ViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_repo_details(self, req: Request):
         repo_name = req.query_params.get("repo")
@@ -45,6 +45,11 @@ class ZipView(ViewSet):
 
         repo_path = req.query_params.get("repo_path")
         repo_zip = req.FILES.get("repo_zip")
+        if not repo_path or not repo_zip:
+            return Response(
+                {"message": "Repo path or zip file not provided"}, status=400
+            )
+
         response = DropBoxService.Insert_Repo(zip_stream=repo_zip, repo_path=repo_path)
         return Response(response["response"], status=response["status"])
 
@@ -67,3 +72,10 @@ class ZipView(ViewSet):
             {"message": response_data["message"], "zip_id": zip_id},
             status=response_data["status"],
         )
+
+    def delete_repo(self, req: Request):
+        repo_path = req.query_params.get("repo_path")
+        if not repo_path:
+            return Response({"message": "Repo path not provided"}, status=400)
+        response = DropBoxService.Delete_Repo(repo_path=repo_path)
+        return Response(response["response"], status=response["status"])

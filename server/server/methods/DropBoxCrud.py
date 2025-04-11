@@ -1,4 +1,3 @@
-from email import message
 from importlib.metadata import files
 from io import BytesIO
 import os
@@ -13,6 +12,8 @@ from server.configs.dropbox.config import get_dropbox_service
 from server.methods.RepoDatabaseHandler import Insert_Repo_Structure
 from server.methods.database.RepositoryDatabaseService import RepoDbService
 from server.models import RepositoryModel, UserModel, UserStorageReference
+from server.utils.ResponseBody import ResponseBody
+from server.utils.ZipWriters import Create_Zip_Object
 
 load_dotenv()
 
@@ -31,10 +32,10 @@ class DropBoxService:
             return {"status": "success", "message": "Inited user in the storage"}
         except dropbox.exceptions.ApiError as e:
             if e.error.is_path() and e.error.get_path().is_conflict():
-                return {
-                    "status": "exists",
-                    "message": f"Folder '{user_folder}' already exists.",
-                }
+
+                return ResponseBody.build(
+                    {"message": f"Folder '{user_folder}' already exists."}, status=400
+                )
 
     # Triggers when account is deleted
     @staticmethod
@@ -59,10 +60,10 @@ class DropBoxService:
             return {"error": "User not found", "status": 404}
 
         except UserStorageReference.DoesNotExist:
-            return {"error": "User storage not found", "status": 404}
+            return ResponseBody.build({"User storage not found": str(e)}, status=404)
 
         except Exception as e:
-            return {"error": str(e), "status": 500}
+            return ResponseBody.build({"Internal server error": str(e)}, status=500)
 
     @staticmethod
     def Delete_All_From_Working_Dir() -> dict:
@@ -85,12 +86,12 @@ class DropBoxService:
                     dbx.files_delete_v2(entry.path_lower)
                     deleted_items.append(entry.name)
 
-            return {"status": "success", "deleted": deleted_items}
+            return ResponseBody.build({"message": deleted_items}, status=200)
 
         except dropbox.exceptions.ApiError as e:
-            return {"status": "error", "message": str(e)}
+            return ResponseBody.build({"Cloud storage Api error": str(e)}, status=400)
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return ResponseBody.build({"error": str(e)}, status=500)
 
     # methods related to repository
 
@@ -103,60 +104,68 @@ class DropBoxService:
             dbx = get_dropbox_service()
             folder_path = f"{os.getenv("WORKING_DIR")}/{user_storage_ref}/{repo_name}"
             response = dbx.files_create_folder_v2(folder_path)
-            print("Response->", response)
+
             repo_path = response.metadata.path_lower
 
             RepositoryModel.objects.create(
                 owner=username, name=repo_name, repo_path=repo_path
             )
             print(response)
-            return {
-                "response": {"message": response.metadata.path_lower},
-                "status": 201,
-            }
 
+            return ResponseBody.build(
+                {"message": response.metadata.path_lower}, status=201
+            )
         except dropbox.exceptions.ApiError as e:
             # Handle the case where the folder already exists
             if e.error.is_path() and e.error.get_path().is_conflict():
-
-                return {
-                    "status": "exists",
-                    "response": {
-                        "message": f"Folder '{folder_path}' already exists.",
-                    },
-                }
+                return ResponseBody.build(
+                    {"message": f"Folder '{folder_path}' already exists."}, status=400
+                )
             else:
-                return {"status": "error", "response": {"message": str(e)}}
+                return ResponseBody.build({"message": str(e)}, status=500)
 
     @staticmethod
     def Insert_Repo(zip_stream: zipfile.ZipFile, repo_path: str):
         try:
             dbx = get_dropbox_service()
-            working_dir = os.getenv("WORKING_DIR")
-            folder_path = f"{working_dir}/{repo_path}"
+            is_repo_exists = RepoDbService.is_repo_path_valid(repo_path)
+            if not is_repo_exists:
+                return ResponseBody.build({"error": "Repository not found"}, status=404)
 
-            # Read the uploaded file content into memory
-            file_content = zip_stream.read()
-
-            # Create a ZipFile object from the uploaded content
-            with zipfile.ZipFile(BytesIO(file_content)) as zip_file:
-                for file_info in zip_file.infolist():
-                    if not file_info.is_dir():
-                        with zip_file.open(file_info) as file:
-                            dbx_path = f"{folder_path}/{file_info.filename}"
-                            dbx.files_upload(file.read(), dbx_path)
-
-            response = Insert_Repo_Structure(
-                zip_stream=zip_stream, repo_path=folder_path
+            Create_Zip_Object(
+                dbx=dbx,
+                repo_zip=zip_stream,
+                folder_path=repo_path,
             )
 
-            return {
-                "status": response["status"],
-                "response": response["response"],
-            }
+            response = Insert_Repo_Structure(zip_stream=zip_stream, repo_path=repo_path)
+
+            return ResponseBody.build(
+                {"message": response["response"]["message"]}, status=response["status"]
+            )
 
         except dropbox.exceptions.ApiError as e:
             print(e)
-            return {"status": 400, "response": {"message": str(e)}}
+            return ResponseBody.build({"Cloud storage Api error": str(e)}, status=400)
         except Exception as e:
-            return {"status": 500, "response": {"error": str(e)}}
+            return ResponseBody.build({"error": str(e)}, status=500)
+
+    @staticmethod
+    def Delete_Repo(repo_path):
+        try:
+            dbx = get_dropbox_service()
+
+            folder_list = dbx.files_list_folder(repo_path)
+
+            # deleting from dropbox
+            dbx.files_delete_v2(repo_path)
+            # deleting from database through (unique)repo_path
+            is_deleted = RepoDbService.delete_repo(repo_path=repo_path)
+            if not is_deleted:
+                return ResponseBody.build({"error": "Repository not found"}, status=404)
+            return ResponseBody.build({"message": folder_list}, 200)
+
+        except dropbox.exceptions.ApiError as e:
+            return ResponseBody.build(
+                {"error": f"Cloud storage Api error {str(e)}"}, status=500
+            )
