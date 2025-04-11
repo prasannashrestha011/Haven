@@ -6,7 +6,7 @@ import zipfile
 
 
 from server.methods.database.RepositoryDatabaseService import RepoDbService
-from server.models import DirectoryModel, FileModel
+from server.models import DirectoryModel, FileModel, RepositoryModel
 
 
 def Insert_Repo_Structure(zip_stream: zipfile.ZipFile, repo_path: str) -> dict:
