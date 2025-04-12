@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+func InitVcrDir() {
+	//checking for existings folders
+	if _, err := os.Stat(configs.VcrDirPath); err == nil {
+		fmt.Println("\033[31m ❌ .vcr folder already exists in current directory\033[0m")
+		return
+	}
+	configs.Create_Config_Dirs_Files()
+}
 func ListFilesAndDirs() []string {
 	dirList := []string{}
 	currentDir := configs.CurrentDirPath
@@ -34,6 +42,7 @@ func ListFilesAndDirs() []string {
 	}
 	return dirList
 }
+
 func GetFilesAndDirs() []string {
 	ignored_patterns := Ignore_Files_n_Dirs()
 	fileAndDirList := ListFilesAndDirs()
@@ -45,7 +54,6 @@ func GetFilesAndDirs() []string {
 
 		if !isIgnored {
 			targeted_List = append(targeted_List, path)
-
 		}
 	}
 	for _, file := range targeted_List {
@@ -103,6 +111,7 @@ func Ignore_Files_n_Dirs() []string {
 	return ignore_list
 }
 
+// main function for listing the dir in index file
 func Add_Dir_n_files() {
 	list := GetFilesAndDirs()
 	file_path := configs.VcrDirPath + "/index"
@@ -114,5 +123,13 @@ func Add_Dir_n_files() {
 	defer file.Close()
 	for _, target_pattern := range list {
 		file.WriteString(target_pattern + "\n")
+	}
+}
+
+func Add_Remote_Connection_Path(origin string, remote_path string) {
+	content := fmt.Sprintf("[remote \"%s\"]\n  url=%s\n", origin, remote_path)
+	err := os.WriteFile(configs.VcrDirRef_file_path, []byte(content), 0644)
+	if err != nil {
+		fmt.Println("Failed to insert the remote path", err.Error())
 	}
 }

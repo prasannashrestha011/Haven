@@ -9,6 +9,9 @@ from server.methods.AuthCrud import AuthCrud
 from django.db import IntegrityError
 from rest_framework import status
 
+from server.models import UserModel
+from server.utils.ResponseBody import ResponseBody
+
 
 class AuthView(ViewSet):
     permission_classes = [AllowAny]
@@ -25,6 +28,19 @@ class AuthView(ViewSet):
             )
         except Exception as e:
             return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=["GET"])
+    def fetch_user_repo_details(self, req: Request):
+        try:
+            username = req.query_params.get("username")
+            if not username:
+                return ResponseBody.build(
+                    {"error": "Username is required."}, status=400
+                )
+            referenceID = AuthCrud.Fetch_User_Repo_Reference(username=username)
+            return Response({"referenceID": referenceID}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=["DELETE"])
     def delete_user(self, req: Request):

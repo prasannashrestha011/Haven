@@ -45,6 +45,8 @@ class ZipView(ViewSet):
 
         repo_path = req.query_params.get("repo_path")
         repo_zip = req.FILES.get("repo_zip")
+        print(repo_path)
+        print(repo_zip)
         if not repo_path or not repo_zip:
             return Response(
                 {"message": "Repo path or zip file not provided"}, status=400

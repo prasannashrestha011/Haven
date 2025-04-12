@@ -20,7 +20,9 @@ class UserModel(AbstractUser):
 
 class UserStorageReference(models.Model):
     storageID = models.CharField(primary_key=True, default=generate_short_uuid)
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        UserModel, on_delete=models.CASCADE, related_name="userstoragereference"
+    )
 
     def __str__(self):
         return f"{self.storageID}-{self.user.username}"

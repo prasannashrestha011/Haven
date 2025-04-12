@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from server.custom_methods.Custom_TokenView import CustomTokenView
 from server.views.Auth import AuthView
 from server.views.FileUploader import FileParserView
 from server.views.ZipView import ZipView
@@ -8,9 +9,10 @@ from server.views.DropBoxView import dropbox_oauth, dropbox_oauth_callback
 
 urlpatterns = [
     # auth routes
-    path("auth/token", TokenObtainPairView.as_view()),
+    path("auth/token", CustomTokenView.as_view()),
     path("auth/refresh", TokenRefreshView.as_view()),
     path("auth/register", AuthView.as_view({"post": "register_user"})),
+    path("auth/details", AuthView.as_view({"get": "fetch_user_repo_details"})),
     path("auth/delete", AuthView.as_view({"delete": "delete_user"})),
     # repo routes
     path("file", FileParserView.as_view()),

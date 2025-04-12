@@ -45,6 +45,21 @@ class AuthCrud:
             return {"response": {"error": e}, "status": 500}
 
     @staticmethod
+    def Fetch_User_Repo_Reference(username: str):
+        try:
+            fetched_user = UserModel.objects.prefetch_related(
+                "userstoragereference"
+            ).get(username=username)
+            print(fetched_user.userstoragereference.storageID)
+            return fetched_user.userstoragereference.storageID
+        except UserModel.DoesNotExist as e:
+            return None
+        except Exception as e:
+            return ResponseBody.build(
+                {"error": f"Unknow server error:{str(e)}"}, status=500
+            )
+
+    @staticmethod
     def delete_user(user_details):
         try:
             validated_body = LoginSerializer(data=user_details)
