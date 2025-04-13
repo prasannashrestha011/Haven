@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import transaction
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -12,7 +12,7 @@ from server.methods.ZipMethods import fetch_repo, insert_repo_details
 
 
 class ZipView(ViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_repo_details(self, req: Request):
         repo_name = req.query_params.get("repo")

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"main/commands/methods/api"
+	configwriters "main/config_writers"
 	"main/configs"
 	"os"
 	"path/filepath"
@@ -19,6 +21,7 @@ func InitVcrDir() {
 	configs.Create_Config_Dirs_Files()
 }
 func ListFilesAndDirs() []string {
+	configs.LoadParentFolder()
 	dirList := []string{}
 	currentDir := configs.CurrentDirPath
 
@@ -124,12 +127,26 @@ func Add_Dir_n_files() {
 	for _, target_pattern := range list {
 		file.WriteString(target_pattern + "\n")
 	}
+	// creating a zip folder that will be stored on .vcr/zip
+	api.Init_Repo_Zip()
 }
-
+func Commit_Dirs_Files() {
+	api.SendZipToServer(configs.VcrRepoZip_file_path)
+}
 func Add_Remote_Connection_Path(origin string, remote_path string) {
-	content := fmt.Sprintf("[remote \"%s\"]\n  url=%s\n", origin, remote_path)
-	err := os.WriteFile(configs.VcrDirRef_file_path, []byte(content), 0644)
+	//find the parent folder containing .vcr dir and refresh the path variables
+	configs.LoadParentFolder()
+	username, err := configwriters.FetchUsernameFromRoot()
+	if err != nil {
+		return
+	}
+
+	content := fmt.Sprintf("[remote \"%s\"]\n [username=%s]\n  url=%s\n", origin, username, remote_path)
+	err = os.WriteFile(configs.VcrDirRef_file_path, []byte(content), 0644)
 	if err != nil {
 		fmt.Println("Failed to insert the remote path", err.Error())
+		return
 	}
+	fmt.Println("🔗 Remote repository successfully connected!")
+
 }

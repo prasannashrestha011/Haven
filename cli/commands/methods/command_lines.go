@@ -52,6 +52,5 @@ func RemoteAddCmd(cmd *cobra.Command, args []string) {
 	}
 	origin := args[0]
 	remote_path := args[1]
-	fmt.Println(remote_path, "is your path")
 	Add_Remote_Connection_Path(origin, remote_path)
 }
