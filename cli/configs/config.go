@@ -29,6 +29,11 @@ func rootPathConfig() {
 	}
 	VcrDirPath = filepath.Join(CurrentDirPath, ".vcr")
 	refPathConfig(VcrDirPath)
+	zipContainerPathConfig(VcrDirPath)
+}
+func zipContainerPathConfig(parent_dir string) {
+	VcrRepoZip_dir_path = parent_dir + "/zip"
+	VcrRepoZip_file_path = VcrRepoZip_dir_path + "/repo_zip.zip"
 }
 func refPathConfig(parent_dir string) {
 	ref_dir_path := parent_dir + "/ref"
@@ -54,7 +59,6 @@ func createRefDir() {
 }
 
 func Create_Config_Dirs_Files() {
-
 	createRootDir()
 	createRefDir()
 	createZipDir()

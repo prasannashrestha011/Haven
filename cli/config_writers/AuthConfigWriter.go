@@ -40,18 +40,39 @@ func WriteConfig(config *structure.VCR_AuthBody) error {
 }
 
 func IsRefConfigExists() (bool, error) {
-	configs.PathConfigs()
-	fmt.Println("Root directory ", configs.VcrDirPath)
-	fmt.Println("Ref file path ", configs.VcrDirRef_file_path)
-	//reading ref file from local .vcr
-	data, err := os.ReadFile(configs.VcrDirRef_file_path)
+
+	remoteRefPath, err := GetRefPath()
 	if err != nil {
-		fmt.Println("Error reading ref file : ", err.Error())
+		fmt.Println("failed to read the local ref index file ", err.Error())
 		return false, err
 	}
-	content := strings.TrimSpace(string(data))
-	fmt.Println(content)
+	fmt.Println("Remote origin already exists ->", remoteRefPath)
 	return true, nil
+}
+func GetRefPath() (string, error) {
+	configs.LoadParentFolder()
+	configs.PathConfigs()
+
+	data, err := os.ReadFile(configs.VcrDirRef_file_path)
+	if err != nil {
+		fmt.Println("Error reading the ref file: ", err.Error())
+		return "", err
+	}
+	fileContent := strings.TrimSpace(string(data))
+	lines := strings.Split(fileContent, "\n")
+	var remoteRefPath string
+	for _, line := range lines {
+		//this was indeed fucking necessary to match with the prefix
+		line = strings.TrimSpace(line)
+
+		if strings.HasPrefix(line, "url=") {
+			url := strings.TrimPrefix(line, "url=")
+
+			remoteRefPath = url
+			return url, nil
+		}
+	}
+	return remoteRefPath, nil
 }
 func FetchUsernameFromRoot() (string, error) {
 	configDir := os.Getenv("HOME") + "/.vcr"

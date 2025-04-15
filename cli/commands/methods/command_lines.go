@@ -38,12 +38,19 @@ func ConfigCmd(cmd *cobra.Command, args []string) {
 func InitCmd(cmd *cobra.Command, args []string) {
 	InitVcrDir()
 }
+func RemoteCmd(cmd *cobra.Command, args []string) {
+	DisplayRemotePath()
+}
 func ListCmd(cmd *cobra.Command, args []string) {
 	GetFilesAndDirs()
 }
 
 func AddCmd(cmd *cobra.Command, args []string) {
 	Add_Dir_n_files()
+}
+func CommitCmd(cmd *cobra.Command, args []string) {
+
+	Commit_Dirs_Files()
 }
 
 func RemoteAddCmd(cmd *cobra.Command, args []string) {
