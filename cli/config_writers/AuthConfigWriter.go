@@ -39,15 +39,18 @@ func WriteConfig(config *structure.VCR_AuthBody) error {
 	return nil
 }
 
-func IsRefConfigExists() (bool, error) {
-
+func IsRefConfigExists() bool {
 	remoteRefPath, err := GetRefPath()
 	if err != nil {
 		fmt.Println("failed to read the local ref index file ", err.Error())
-		return false, err
+		return false
+	}
+	if strings.TrimSpace(remoteRefPath) == "" {
+		return false
 	}
 	fmt.Println("Remote origin already exists ->", remoteRefPath)
-	return true, nil
+	fmt.Println("outside")
+	return true
 }
 func GetRefPath() (string, error) {
 	configs.LoadParentFolder()

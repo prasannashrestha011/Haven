@@ -57,6 +57,11 @@ func ListFilesAndDirs() []string {
 }
 
 func Add_Remote_Connection_Path(origin string, remote_path string) {
+	fmt.Println("working....")
+	isRemoteExists := configwriters.IsRefConfigExists()
+	if isRemoteExists {
+		return
+	}
 	//find the parent folder containing .vcr dir and refresh the path variables
 	configs.LoadParentFolder()
 	username, err := configwriters.FetchUsernameFromRoot()

@@ -6,10 +6,8 @@ import (
 )
 
 func TestRef(t *testing.T) {
-	isExists, err := IsRefConfigExists()
-	if err != nil {
-		return
-	}
+	isExists := IsRefConfigExists()
+
 	if isExists {
 		fmt.Println("Reference exists")
 	}
