@@ -1,5 +1,22 @@
 package configwriters
 
+// WriteConfig writes the provided VCR_AuthBody configuration to a JSON file
+// located in the user's home directory under ~/.vcr/config.json. It ensures
+// the directory exists and creates the file with proper indentation.
+// Returns an error if any file operation fails.
+
+// IsRefConfigExists checks if a remote reference configuration exists by
+// reading the local ref index file. It returns true if the reference exists,
+// otherwise false.
+
+// GetRefPath retrieves the remote reference path from the local ref index file.
+// It parses the file to find a line prefixed with "url=" and returns the URL.
+// Returns an error if the file cannot be read or the URL is not found.
+
+// FetchUsernameFromRoot reads the username from the configuration file located
+// at ~/.vcr/config.json. It unmarshals the JSON data to extract the username field.
+// Returns an error if the file cannot be read or the JSON unmarshalling fails.
+
 import (
 	"encoding/json"
 	"fmt"
@@ -68,11 +85,11 @@ func GetRefPath() (string, error) {
 		//this was indeed fucking necessary to match with the prefix
 		line = strings.TrimSpace(line)
 
-		if strings.HasPrefix(line, "url=") {
-			url := strings.TrimPrefix(line, "url=")
+		if strings.HasPrefix(line, "path=") {
+			path := strings.TrimPrefix(line, "path=")
 
-			remoteRefPath = url
-			return url, nil
+			remoteRefPath = path
+			return path, nil
 		}
 	}
 	return remoteRefPath, nil

@@ -37,14 +37,14 @@ func zipContainerPathConfig(parent_dir string) {
 }
 func refPathConfig(parent_dir string) {
 	ref_dir_path := parent_dir + "/ref"
-	VcrDirRef_file_path = filepath.Join(ref_dir_path, "ref")
+	VcrDirRef_file_path = filepath.Join(ref_dir_path, "ref.txt")
 }
 
 func createRootDir() {
 	//for creating .vcr folder
 	os.Mkdir(VcrDirPath, os.ModePerm)
 	//adding index & ref file inside .vcr and /ref respectively
-	VcrIndex_file_path = filepath.Join(VcrDirPath, "index")
+	VcrIndex_file_path = filepath.Join(VcrDirPath, "index.txt")
 	os.Create(VcrIndex_file_path)
 }
 func createZipDir() {

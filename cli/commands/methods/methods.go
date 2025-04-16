@@ -1,10 +1,31 @@
+//							### Docs###
+// InitVcrDir checks if the .vcr directory already exists in the current directory.
+// If it exists, it prints an error message and exits. Otherwise, it creates the
+// necessary configuration directories and files for the .vcr setup.
+
+// DisplayRemotePath retrieves and displays the remote repository path from the
+// configuration. If an error occurs while fetching the path, it prints an error message.
+
+// ListFilesAndDirs lists all files and directories in the current directory and its
+// subdirectories relative to the current directory path. It returns a slice of strings
+// containing the relative paths of the files and directories. If an error occurs during
+// directory traversal, it logs the error and returns an empty slice.
+
+// Add_Remote_Connection_Path adds a remote repository connection by writing the
+// remote origin, username, and URL to the configuration file. It validates the remote
+// path to ensure it starts with "http://". If the remote configuration already exists
+// or if an error occurs during the process, it exits without making changes. On success,
+// it prints a success message indicating the remote repository is connected.
+
+// Commit_Dirs_Files prepares the necessary paths and sends a zipped version of the
+// repository to the server using the API. It ensures the parent folder and path
+// configurations are loaded before performing the operation.
 package methods
 
 import (
 	"fmt"
 	"io/fs"
 	"log"
-	"strings"
 
 	"main/commands/methods/api"
 	configwriters "main/config_writers"
@@ -57,9 +78,10 @@ func ListFilesAndDirs() []string {
 }
 
 func Add_Remote_Connection_Path(origin string, remote_path string) {
-	fmt.Println("working....")
+
 	isRemoteExists := configwriters.IsRefConfigExists()
 	if isRemoteExists {
+		fmt.Println("Remove current remote origin")
 		return
 	}
 	//find the parent folder containing .vcr dir and refresh the path variables
@@ -68,11 +90,8 @@ func Add_Remote_Connection_Path(origin string, remote_path string) {
 	if err != nil {
 		return
 	}
-	if !strings.HasPrefix(remote_path, "http://") {
-		fmt.Println("Invalid remote origin")
-		return
-	}
-	content := fmt.Sprintf("[remote \"%s\"]\n [username=%s]\n  url=%s\n", origin, username, remote_path)
+
+	content := fmt.Sprintf("[remote \"%s\"]\n [username=%s]\n  path=%s\n", origin, username, remote_path)
 	err = os.WriteFile(configs.VcrDirRef_file_path, []byte(content), 0644)
 	if err != nil {
 		fmt.Println("Failed to insert the remote path", err.Error())

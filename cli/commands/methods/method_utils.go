@@ -1,4 +1,30 @@
+// Package methods provides utility functions for handling files and directories,
+// including filtering, ignoring patterns, and creating zip archives.
 package methods
+
+// GetFilesAndDirs retrieves a list of files and directories in the current directory,
+// excluding those that match patterns specified in the ignore file (.vcr.ignore).
+// It prints the filtered list to the console and returns it as a slice of strings.
+
+// IsIgnored checks whether a given file or directory path matches any of the
+// specified ignore patterns. It also checks parent directories to ensure
+// that ignored directories are excluded recursively.
+
+// Ignore_Files_n_Dirs reads the ignore file (.vcr.ignore) and returns a list of
+// patterns to ignore. If the ignore file does not exist or cannot be read,
+// it returns nil and logs an appropriate message.
+
+// Add_Dir_n_files generates a list of files and directories to be tracked,
+// writes the list to an index file in the .vcr directory, and creates a zip
+// archive of the tracked files and directories.
+
+// Init_Repo_Zip initializes the creation of a zip archive for the tracked files
+// and directories. It ensures that the necessary configurations are loaded
+// and calls the CreateRepoZip function to generate the zip file.
+
+// CreateRepoZip creates a zip archive containing the specified list of files
+// and directories. It handles both files and directories, preserving their
+// structure and metadata. The resulting zip file is saved at the specified path.
 
 import (
 	"archive/zip"
@@ -81,7 +107,7 @@ func Ignore_Files_n_Dirs() []string {
 // main function for listing the dir in index file
 func Add_Dir_n_files() {
 	list := GetFilesAndDirs()
-	file_path := configs.VcrDirPath + "/index"
+	file_path := configs.VcrDirPath + "/index.txt"
 	file, err := os.OpenFile(file_path, os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
 		fmt.Println(err.Error())
