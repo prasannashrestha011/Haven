@@ -10,7 +10,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from server.configs.dropbox.config import get_dropbox_service
 from server.models import FileModel, RepositoryModel, DirectoryModel
+from server.utils.ResponseBody import ResponseBody
 
 
 def fetch_repo(user: str, repo_name: str) -> dict:
@@ -115,3 +117,23 @@ def insert_repo_details(zip_file: zipfile.ZipFile, user: str, repo_name: str) ->
             )
 
     return {"message": "Repo created successfully", "status": 201}
+
+
+def get_file_content(file_path: str) -> ResponseBody:
+    dbx = get_dropbox_service()
+    try:
+        metadata, res = dbx.files_download(file_path)
+        if res.status_code != 200:
+            return ResponseBody.build(
+                {"message": "Failed to download file"}, status=res.status_code
+            )
+        file_name = metadata.name
+        content = res.content.decode("utf-8")
+        print(f"File metadata: {metadata}")
+        print(f"File content: {content}")
+        return ResponseBody.build(
+            {"message": {"file_name": file_name, "content": content}}, status=200
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        return None

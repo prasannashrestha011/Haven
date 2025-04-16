@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "server"
+    "server",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -49,7 +51,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    
 ]
 
 ROOT_URLCONF = "root.urls"
@@ -70,30 +71,31 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "root.wsgi.application"
-AUTH_USER_MODEL='server.UserModel'
-SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME':timedelta(days=30)
+AUTH_USER_MODEL = "server.UserModel"
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
-REST_FRAMEWORK={
-      'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    ),
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'git_cli',
-        'USER': 'postgres',
-        'PASSWORD': '9843',
-        'HOST': 'localhost',  # or your remote database host
-        'PORT': '5432',       # Default PostgreSQL port
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "git_cli",
+        "USER": "postgres",
+        "PASSWORD": "9843",
+        "HOST": "localhost",  # or your remote database host
+        "PORT": "5432",  # Default PostgreSQL port
     }
 }
-
 
 
 # Password validation
