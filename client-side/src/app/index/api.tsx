@@ -45,7 +45,9 @@ export async function SubmitRegistrationForm(
   }
 export async function SubmitLoginForm(body: LoginForm): Promise<LoginResponseType | null> {
     try {
-        const response = await axios.post<LoginResponseType>(`${root_url}/auth/token`, body);
+        const response = await axios.post<LoginResponseType>(`${root_url}/auth/token`, body,{
+          withCredentials:true
+        });
         
         if (response.status !== 200) {
             console.error("Login failed with status:", response.status, "Response:", response.data);

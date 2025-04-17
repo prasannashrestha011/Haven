@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { RegistrationForm, RegistrationResult, SubmitRegistrationForm } from "../../index/api";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SignUpPage = () => {
   const nav=useRouter()
@@ -276,12 +277,12 @@ const SignUpPage = () => {
         <div className="mt-8 text-center text-sm">
           <p className="text-gray-400">
             Already have an account?{" "}
-            <a
+            <Link
               href="/accounts/signIn"
               className="text-indigo-400 font-medium hover:underline"
             >
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

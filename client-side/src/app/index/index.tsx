@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export const Index = () => {
@@ -12,9 +13,9 @@ export const Index = () => {
 
       {/* Navigation */}
       <nav className="h-10 flex justify-end gap-4 items-center Lexend-Regular text-slate-100 text-sm pr-14 text-semibold">
-        <a href="#">Installation</a>
-        <a href="#docs">Documentation</a>
-        <a href="/signup">Sign up</a>
+        <Link href="#">Installation</Link>
+        <Link href="#docs">Documentation</Link>
+        <Link href="/accounts/signup">Sign up</Link>
       </nav>
 
       {/* Main hero content */}
