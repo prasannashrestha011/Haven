@@ -41,7 +41,7 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
     };
 
     return (
-        <div className="repo-explorer p-3 border border-black w-80 h-screen overflow-y-scroll">
+        <div className="repo-explorer p-3 border border-black w-96 h-screen overflow-y-scroll">
             
             
             {/* Render root files */}
@@ -126,7 +126,7 @@ const FileItem = ({ file, level,dir }: { file: File; level: number,dir:string })
   },[])
   return (
     <Link href={fullPath}>
-     <div className="file" style={{ paddingLeft: `${level * 16}px` }} onClick={()=>setPath(childPath)} >
+     <div className="" style={{ paddingLeft: `${level * 16}px` }} onClick={()=>setPath(childPath)} >
       <span className="icon">📄</span>
       {file.fileName}
       {file.filePath && <span className="file-path">{file.filePath}</span>}
