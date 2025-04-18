@@ -1,6 +1,6 @@
-import usePathStore from '@/state/path_state';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 
 export type File = {
     fileID: string;
@@ -29,9 +29,6 @@ export type Repository = {
 };
 
 export const RepoExplorer = ({ repo }: { repo: Repository }) => {
-    if(!repo){
-      return <div>No repo content</div>
-    }
     const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
 
     const toggleDirectory = (dirID: string) => {
@@ -46,7 +43,7 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
             
             {/* Render root files */}
             {repo.structure.rootFiles.map(file => (
-                <FileItem key={file.fileID} dir={`${repo.repoName}`} file={file} level={0}  />
+                <FileItem key={file.fileID} dir={''} file={file} level={0} />
             ))}
             
             {/* Render directories */}
@@ -57,7 +54,6 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
                     level={0}
                     expandedDirs={expandedDirs}
                     toggleDirectory={toggleDirectory}
-                    parentPath={`${repo.repoName}`}
                 />
             ))}
         </div>
@@ -115,23 +111,16 @@ const DirectoryItem = ({
 };
 
 const FileItem = ({ file, level,dir }: { file: File; level: number,dir:string }) => {
- 
-  const {setPath} = usePathStore();
   const basePath = '/repositories'; // default base path
-  const childPath = `${dir ? dir : ''}/${file.fileName}`;
-  const fullPath=`${basePath}/${childPath}`
-  useEffect(()=>{
-    console.log("runing file item")
-    setPath(childPath)
-  },[])
+  const fullPath = `${basePath}${dir ? dir : ''}/${file.fileName}`;
   return (
-    <Link href={fullPath}>
-     <div className="file" style={{ paddingLeft: `${level * 16}px` }} onClick={()=>setPath(childPath)} >
+   <Link href={fullPath}>
+     <div className="file" style={{ paddingLeft: `${level * 16}px` }} onClick={()=>console.log(`${fullPath}`)}>
       <span className="icon">📄</span>
       {file.fileName}
       {file.filePath && <span className="file-path">{file.filePath}</span>}
     </div>
-    </Link>
+   </Link>
   );
 };
 

@@ -15,6 +15,28 @@ from server.models import FileModel, RepositoryModel, DirectoryModel
 from server.utils.ResponseBody import ResponseBody
 
 
+def fetch_repo_list(user: str) -> dict:
+    try:
+        repos = RepositoryModel.objects.filter(owner=user)
+    except RepositoryModel.DoesNotExist:
+        return {"message": "No repositories found", "status": 404}
+
+    repo_list = []
+    for repo in repos:
+        repo_data = {
+            "repoID": repo.repoID,
+            "repoName": repo.name,
+            "owner": (
+                repo.owner.username if hasattr(repo.owner, "username") else repo.owner
+            ),
+            "created_at": repo.created_at,
+            "updated_at": repo.updated_at,
+        }
+        repo_list.append(repo_data)
+
+    return {"repos": repo_list, "status": 200}
+
+
 def fetch_repo(user: str, repo_name: str) -> dict:
     try:
         repo = RepositoryModel.objects.get(name=repo_name, owner=user)
@@ -125,7 +147,7 @@ def get_file_content(file_path: str) -> ResponseBody:
         metadata, res = dbx.files_download(file_path)
         if res.status_code != 200:
             return ResponseBody.build(
-                {"message": "Failed to download file"}, status=res.status_code
+                {"error": "Failed to download file"}, status=res.status_code
             )
         file_name = metadata.name
         content = res.content.decode("utf-8")
@@ -136,4 +158,4 @@ def get_file_content(file_path: str) -> ResponseBody:
         )
     except Exception as e:
         print(f"Error: {e}")
-        return None
+        return ResponseBody.build({"error": str(e)}, status=500)

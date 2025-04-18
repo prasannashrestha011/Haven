@@ -13,6 +13,7 @@ class FileContentView(APIView):
 
     def get(self, req: Request):
         file_path = req.query_params.get("file_path")
+        print("FILE PATH", file_path)
         if not file_path:
             return Response({"message": "file path is required"}, status=400)
         get_file_content_response = get_file_content(file_path)

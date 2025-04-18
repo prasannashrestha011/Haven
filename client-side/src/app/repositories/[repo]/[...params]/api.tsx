@@ -23,7 +23,12 @@ export type Repository = {
     structure: RepoStructure;
     status: number;
 };
-
+export interface FileContentResponse{
+    message:{
+        file_name:string 
+        content:string
+    }
+}
 
 export const FetchRepoStructure = async (user: string, repo: string): Promise<Repository | null> => {
     try {
@@ -38,3 +43,15 @@ export const FetchRepoStructure = async (user: string, repo: string): Promise<Re
         return null;
     }
 };
+export async function FetchFileContent(file_path:string):Promise<FileContentResponse|null>{
+    try{
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_ROOT_URL}/repo/content`, {
+            params: { file_path }
+        });
+        console.log(response)
+        return response.data as FileContentResponse;
+    } catch (err) {
+        console.error('Error fetching file content:', err);
+        return null;
+    }
+}
