@@ -4,12 +4,14 @@ import { Trash2 } from "lucide-react";
 import { SubmitRepoDeletion } from "@/app/repositories/api";
 import useUserStore from "@/state/user_info_state";
 import toast from "react-hot-toast";
+import { useRepoListStore } from "@/state/repoListStore";
 
 export default function TrashWithModal({repoName,repoPath}:{repoName:string,repoPath:string}) {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState(false);
-  const {userInfo}=useUserStore()
+  const {userInfo}=useUserStore() 
+  const {repoList,setRepoList}=useRepoListStore()
 
   const handleClose = () => {
     setOpen(false);
@@ -23,6 +25,7 @@ export default function TrashWithModal({repoName,repoPath}:{repoName:string,repo
       const response=await SubmitRepoDeletion(repoPath)
       if(response.success){
         toast.success(response.message)
+        setRepoList(repoList.filter(repo=>repo.repoName!=repoName))
       }else{
         toast.error(response.message)
       }

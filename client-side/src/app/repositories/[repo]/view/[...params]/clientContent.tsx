@@ -3,7 +3,7 @@ import useUserStore from '@/state/user_info_state';
 import { usePathname,useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import {  FetchRepoStructure, Repository } from './api';
-import { RepoExplorer } from '../FileExplorer';
+import { RepoExplorer } from '../../FileExplorer';
 
 export const RepoFileExplorer = () => {
   const params=useParams()
@@ -29,7 +29,7 @@ export const RepoFileExplorer = () => {
   }, [userInfo,repo]);
 
   return (
-    <div>
+    <div className=''>
    
       {treeData && (
         <RepoExplorer 

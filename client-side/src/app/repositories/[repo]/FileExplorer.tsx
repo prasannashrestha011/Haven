@@ -41,13 +41,18 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
     };
 
     return (
-        <div className="repo-explorer p-3 border border-black w-96 h-screen overflow-y-scroll">
+        <div className="repo-explorer p-3 border border-black w-full ">
             
             
             {/* Render root files */}
-            {repo.structure.rootFiles.map(file => (
-                <FileItem key={file.fileID} dir={`${repo.repoName}`} file={file} level={0}  />
-            ))}
+            {repo.structure.rootFiles.map(file => {
+               
+                return(
+                  <FileItem key={file.fileID} dir={`${repo.repoName}/view/`} file={file} level={0}  />
+                )
+            }
+               
+            )}
             
             {/* Render directories */}
             {repo.structure.directories.map(directory => (
@@ -77,7 +82,7 @@ const DirectoryItem = ({
   toggleDirectory: (dirID: string) => void;
   parentPath?:string
 }) => {
-  const currentPath=`${parentPath}/${directory.dirName}`
+  const currentPath=`${parentPath}/view/${directory.dirName}/`
   const isExpanded = expandedDirs.has(directory.dirID);
 
   return (
@@ -118,7 +123,8 @@ const FileItem = ({ file, level,dir }: { file: File; level: number,dir:string })
  
   const {setPath} = usePathStore();
   const basePath = '/repositories'; // default base path
-  const childPath = `${dir ? dir : ''}/${file.fileName}`;
+  
+  const childPath = `${dir ? `${dir}` : ''}${file.fileName}`;
   const fullPath=`${basePath}/${childPath}`
   useEffect(()=>{
     console.log("runing file item")

@@ -1,5 +1,5 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FetchFileContent, FileContentResponse } from "./api";
 import useUserStore from "@/state/user_info_state";
@@ -7,8 +7,12 @@ import LoadingState from "@/app/components/LoadingState";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 export default function Post() {
+  const params=useParams()
+  const repo=params.repo 
+  const dynamicParams: string[] = Array.isArray(params?.params) ? params.params : [];
+
   const pathName = usePathname();
-  const filePath = pathName.split("/").slice(2).join("/");
+
   const { userInfo } = useUserStore();
   const [fileRender, setFileRenderer] = useState<FileContentResponse>();
 
@@ -19,8 +23,11 @@ export default function Post() {
         console.log("StorageID not loaded yet, waiting...");
         return;
       }
+      
+      const filePath=`${repo}/${dynamicParams.join("/")}`
+  
       const file_path = `/users/${userInfo.storageID}/${filePath}`;
-
+    
       const contentBody = await FetchFileContent(file_path);
 
       if (!contentBody) {
@@ -30,8 +37,8 @@ export default function Post() {
       setFileRenderer(contentBody);
     };
 
-    RenderFileContent();
-  }, [userInfo, filePath]);
+    RenderFileContent()
+  }, [userInfo]);
   if (!fileRender) {
     return <LoadingState />;
   }
