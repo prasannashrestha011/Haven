@@ -1,33 +1,54 @@
 import { useState } from "react";
 import { Modal, Box, Typography, TextField, Button, Stack } from "@mui/material";
-import { Trash2 } from "lucide-react";
+import { FolderPlus } from "lucide-react";
+import { useRepoListStore } from "@/state/repoListStore";
+import { SubmitNewRepo } from "@/app/repositories/api";
+import useUserStore from "@/state/user_info_state";
+import toast from 'react-hot-toast'
 
-export default function TrashWithModal({repoName}:{repoName:string}) {
+export default function CreateRepoModal() {
   const [open, setOpen] = useState(false);
-  const [confirmText, setConfirmText] = useState("");
+  const [repoName, setRepoName] = useState("");
   const [error, setError] = useState(false);
-
+  const {repoList,setRepoList}=useRepoListStore()
+  const {userInfo}=useUserStore()
+  const [apiMessage,setApiMessage]=useState<string>("")
   const handleClose = () => {
     setOpen(false);
-    setConfirmText("");
+    setRepoName("");
     setError(false);
   };
 
-  const handleDelete = () => {
-    if (confirmText === repoName) {
-      // Call the delete API here
-      console.log(`Repository "${repoName}" deleted`);
+  const handleCreate = async() => {
+    if (repoName.trim() !== "" && userInfo?.username) {
+       const result = await SubmitNewRepo(repoName.trim(), userInfo?.username);
+       const newRepo=await result.newRepo
+       if(result.success && newRepo){
+         toast.success(result.message)
+         setRepoList([...repoList, newRepo]);
+       }else{
+         toast.error(result.message);
+       }
       handleClose();
     } else {
       setError(true);
     }
   };
 
-  const isDeleteButtonDisabled = confirmText !== repoName;
+
+  const isCreateButtonDisabled = repoName.trim() === "";
 
   return (
     <>
-      <Trash2 color="red" onClick={() => setOpen(true)} style={{ cursor: "pointer" }} />
+      <Button 
+        variant="contained" 
+        color="primary" 
+        size="small"
+        startIcon={<FolderPlus />}
+        onClick={() => setOpen(true)}
+      >
+        <span className="text-sm">New repository</span>
+      </Button>
 
       <Modal open={open} onClose={handleClose}>
         <Box sx={{
@@ -40,59 +61,68 @@ export default function TrashWithModal({repoName}:{repoName:string}) {
           borderRadius: 2,
           boxShadow: 24,
           width: 400,
-          maxWidth: '90%'
-        }}>
-          <Typography variant="h6" sx={{ color: '#d32f2f', fontWeight: 600, mb: 2 }}>
-            Delete repository
+          maxWidth: '90%',
+          backgroundColor:'#111827',
+          '& .MuiTypography-root': { 'fontFamily':'Lexend-Regular','color':'white' }, // Ensure all Typography components inherit
+          '& .MuiButton-root': { 'fontFamily':'Lexend-Regular' }, // Ensure all Button components inherit
+          '& .MuiInputBase-root': { 'fontFamily':'Lexend-Regular',bgcolor:'#111827',color:'whitesmoke' }
+        }} 
+   
+        >
+          <Typography variant="h6" sx={{ color: '#2e7d32', fontWeight: 600, mb: 2 }} className="Lexend-Bold">
+            Create new repository
           </Typography>
           
           <Typography variant="body1" sx={{ mb: 1 }}>
-            This action cannot be undone. This will permanently delete the 
-            <Typography component="span" sx={{ fontWeight: 600 }}> {repoName} </Typography>
-            repository, wiki, issues, comments, packages, secrets, workflows, and releases.
+            A repository contains all your project's files, history, and configurations.
           </Typography>
           
-          <Box sx={{ my: 3, p: 2, bgcolor: '#ffebe9', borderRadius: 1, border: '1px solid #f0a6a6' }}>
+          <Box sx={{ my: 3 }}>
+            <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+              Repository name *
+            </Typography>
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Enter repository name"
+              value={repoName}
+              onChange={(e) => {
+                setRepoName(e.target.value);
+                if (error) setError(false);
+              }}
+              error={error}
+              helperText={error ? "Repository name is required" : ""}
+              sx={{ mb: 2 }}
+            />
+          </Box>
+          
+          <Box sx={{ my: 3, p: 2, borderRadius: 1, border: '1px solid #a5d6a7' }}>
             <Typography variant="body2">
-              Please type <Typography component="span" sx={{ fontWeight: 600 }}>{repoName}</Typography> to confirm.
+              Repository will be created with default settings. You can configure additional settings after creation.
             </Typography>
           </Box>
           
-          <TextField
-            fullWidth
-            variant="outlined"
-            size="small"
-            placeholder={`Type "${repoName}" to confirm`}
-            value={confirmText}
-            onChange={(e) => {
-              setConfirmText(e.target.value);
-              if (error) setError(false);
-            }}
-            error={error}
-            helperText={error ? "Repository name doesn't match" : ""}
-            sx={{ mb: 3 }}
-          />
-          
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               onClick={handleClose}
               sx={{ borderColor: '#d0d7de', color: 'text.primary' }}
             >
               Cancel
             </Button>
-            <Button 
-              variant="contained" 
-              color="error"
-              disabled={isDeleteButtonDisabled}
-              onClick={handleDelete}
-              sx={{ 
-                bgcolor: '#d32f2f',
-                '&:hover': { bgcolor: '#b71c1c' },
+            <Button
+              variant="contained"
+              color="success"
+              disabled={isCreateButtonDisabled}
+              onClick={handleCreate}
+              sx={{
+                bgcolor: '#2e7d32',
+                '&:hover': { bgcolor: '#1b5e20' },
                 '&.Mui-disabled': { bgcolor: '#f5f5f5', color: 'rgba(0, 0, 0, 0.26)' }
               }}
             >
-             Delete
+              Create
             </Button>
           </Stack>
         </Box>

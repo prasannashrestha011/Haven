@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { GetRepositoryList, RepoStruct } from './api'
 import useUserStore from '@/state/user_info_state'
-import { Book, AlertCircle, User, Plus, ChevronDown, ArrowDownAZ, ArrowUpAZ, Clock } from 'lucide-react'
-import moment from 'moment'
 
 import RepositoryHeader from './components/RepositoryHeader'
 
@@ -14,10 +12,12 @@ import LoadingState, { EmptyState, ErrorState } from '../components/LoadingState
 import RepositoryList from './components/RepositoryList'
 import Sidebar from './components/Sidebar'
 import SortBar from './components/SortBar'
-
+import { useRepoListStore } from '../../state/repoListStore'
+import {Toaster} from 'react-hot-toast'
 const RepoclientContent = () => {
     const { userInfo } = useUserStore()
-    const [repoList, setRepoList] = useState<RepoStruct[]>([])
+ 
+    const {repoList,setRepoList}=useRepoListStore()
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [sortMenuOpen, setSortMenuOpen] = useState(false)
@@ -32,6 +32,7 @@ const RepoclientContent = () => {
         try {
             console.log("Fetching user repo-> ", userInfo.username)
             const repos = await GetRepositoryList(userInfo.username)
+            
             setRepoList(repos)
         } catch (err) {
             setError("Failed to load repositories")
@@ -76,6 +77,7 @@ const RepoclientContent = () => {
     
     return (
         <div className="w-full h-screen bg-gray-900 text-gray-100 flex">
+            <Toaster position='top-center'/>
             <Sidebar username={userInfo?.username || 'User'} />
             
             <div className="flex-1 overflow-hidden flex flex-col">

@@ -8,6 +8,7 @@ from rest_framework.viewsets import ViewSet
 
 from server.methods import DropBoxCrud
 from server.methods.DropBoxCrud import DropBoxService
+from server.methods.UserMethod import UserMethods
 from server.methods.ZipMethods import fetch_repo, fetch_repo_list, insert_repo_details
 
 
@@ -36,17 +37,17 @@ class ZipView(ViewSet):
 
     def init_repo(self, req: Request):
         repo_name = req.query_params.get("repo")
-        storage_ref = req.query_params.get("storage_ref")
         username = req.query_params.get("username")
-        if not repo_name or not storage_ref:
+        if not repo_name or not username:
             return Response(
-                {"error": "repo name or userID is not provided"}, status=400
+                {"error": "repo name or username is not provided"}, status=400
             )
+        storageID = UserMethods.fetch_storageID(username=username)
 
         response = DropBoxService.Init_Repo_Dir(
-            repo_name=repo_name, user_storage_ref=storage_ref, username=username
+            repo_name=repo_name, user_storage_ref=storageID, username=username
         )
-        return Response(response, status=201)
+        return Response(response["response"], status=201)
 
     def insert_repo(self, req: Request):
 

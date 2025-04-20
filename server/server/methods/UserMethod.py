@@ -24,10 +24,7 @@ class UserMethods:
             storage_reference = UserStorageReference.objects.get(
                 user__username=username
             )
-            return {
-                "user": storage_reference.user,
-                "storageID": storage_reference.storageID,
-            }
+            return storage_reference.storageID
 
         except UserStorageReference.DoesNotExist as e:
             return {"error": "storage reference doesnot exists"}

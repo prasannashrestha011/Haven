@@ -4,6 +4,7 @@ import os
 
 import zipfile
 
+from django.forms import model_to_dict
 from dotenv import load_dotenv
 import dropbox
 import dropbox.exceptions
@@ -106,15 +107,19 @@ class DropBoxService:
             response = dbx.files_create_folder_v2(folder_path)
 
             repo_path = response.metadata.path_lower
-
-            RepositoryModel.objects.create(
+            newRepo = RepositoryModel.objects.create(
                 owner=username, name=repo_name, repo_path=repo_path
             )
-            print(response)
+            json_response = {
+                "repoID": str(newRepo.repoID),
+                "owner": newRepo.owner,
+                "repoName": newRepo.name,
+                "repo_path": newRepo.repo_path,
+                "created_at": newRepo.created_at.isoformat(),
+                "updated_at": newRepo.updated_at.isoformat(),
+            }
+            return ResponseBody.build({"newRepo": json_response}, status=201)
 
-            return ResponseBody.build(
-                {"message": response.metadata.path_lower}, status=201
-            )
         except dropbox.exceptions.ApiError as e:
             # Handle the case where the folder already exists
             if e.error.is_path() and e.error.get_path().is_conflict():
@@ -163,7 +168,7 @@ class DropBoxService:
             is_deleted = RepoDbService.delete_repo(repo_path=repo_path)
             if not is_deleted:
                 return ResponseBody.build({"error": "Repository not found"}, status=404)
-            return ResponseBody.build({"message": folder_list}, 200)
+            return ResponseBody.build({"message": "Repository deleted successfully"}, 200)
 
         except dropbox.exceptions.ApiError as e:
             return ResponseBody.build(

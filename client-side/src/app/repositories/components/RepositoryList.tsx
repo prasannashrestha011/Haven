@@ -8,9 +8,7 @@ import Link from "next/link";
 interface RepositoryListProps {
   repositories: RepoStruct[];
 }
-import { Trash2 } from "lucide-react";
-import DeleteModal from "@/app/app_components/Models/CreateRepoModel";
-import TrashWithModal from "@/app/app_components/Models/CreateRepoModel";
+import TrashWithModal from "@/app/app_components/Models/DeleteRepoModel";
 const RepositoryList = ({ repositories }: RepositoryListProps) => {
   return (
     <div className="overflow-auto flex-1">
@@ -31,7 +29,8 @@ const RepositoryList = ({ repositories }: RepositoryListProps) => {
                 {moment(repo.created_at).fromNow()}
               </div>
             </Link>
-            <TrashWithModal repoName={repo.repoName} key={idx} />
+            
+            <TrashWithModal repoName={repo.repoName} repoPath={repo.repo_path} key={idx} />
           </li>
         ))}
       </ul>

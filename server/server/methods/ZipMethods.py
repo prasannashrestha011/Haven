@@ -29,6 +29,7 @@ def fetch_repo_list(user: str) -> dict:
             "owner": (
                 repo.owner.username if hasattr(repo.owner, "username") else repo.owner
             ),
+            "repo_path":repo.repo_path,
             "created_at": repo.created_at,
             "updated_at": repo.updated_at,
         }
