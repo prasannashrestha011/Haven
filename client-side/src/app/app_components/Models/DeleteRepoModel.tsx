@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal, Box, Typography, TextField, Button, Stack } from "@mui/material";
-import { Trash2 } from "lucide-react";
+import { Delete, Trash2 } from "lucide-react";
 import { SubmitRepoDeletion } from "@/app/repositories/api";
 import useUserStore from "@/state/user_info_state";
 import toast from "react-hot-toast";
@@ -39,7 +39,15 @@ export default function TrashWithModal({repoName,repoPath}:{repoName:string,repo
 
   return (
     <>
-      <Trash2 color="red" onClick={() => setOpen(true)} style={{ cursor: "pointer" }} />
+     <Button
+
+          color="primary"
+          size="small"
+          startIcon={ <Trash2 color="red" onClick={() => setOpen(true)} style={{ cursor: "pointer" }} />}
+          onClick={() => setOpen(true)}
+     >
+      <span>Delete</span>
+     </Button>
 
       <Modal open={open} onClose={handleClose}>
         <Box sx={{

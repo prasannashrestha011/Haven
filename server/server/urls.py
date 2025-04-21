@@ -22,6 +22,7 @@ urlpatterns = [
     path("repo/insert", ZipView.as_view({"post": "insert_repo"})),
     path("repo/delete", ZipView.as_view({"delete": "delete_repo"})),
     path("repo/delete/all", ZipView.as_view({"delete": "delete_all_repos"})),
+    path("repo/update", ZipView.as_view({"patch": "update_repo_details"})),
     path("dropbox/oauth/", dropbox_oauth, name="dropbox_oauth"),
     path(
         "dropbox/oauth/callback/", dropbox_oauth_callback, name="dropbox_oauth_callback"

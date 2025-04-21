@@ -9,8 +9,6 @@ interface RepositoryListProps {
   repositories: RepoStruct[];
 }
 import TrashWithModal from "@/app/app_components/Models/DeleteRepoModel";
-import UpdateRepoModal from "@/app/app_components/Models/UpdateRepoModel";
-import SettingsMenu from "@/app/app_components/Models/SettingModel";
 const RepositoryList = ({ repositories }: RepositoryListProps) => {
   return (
     <div className="overflow-auto flex-1">
@@ -21,23 +19,25 @@ const RepositoryList = ({ repositories }: RepositoryListProps) => {
             className="px-4 py-3 flex justify-between items-center hover:bg-gray-800 transition-colors"
           >
             <Link href={`/repositories/${repo.repoName}`}>
-              <div className="flex flex-col items-start mb-1.5">
-                <div className="flex items-center ">
-                  <Book className="h-4 w-4 mr-2 text-gray-500" />
-                  <span className="text-blue-400  text-xl font-bold hover:underline cursor-pointer">
-                    {repo.repoName}
-                  </span>
-                </div>
-                <span className="text-sm ml-6 my-auto text-gray-500">
-                  {repo.des}
+              <div className="flex  items-center mb-1.5">
+                <Book className="h-4 w-4 mr-2 text-gray-500" />
+                <span className="text-blue-400  text-base hover:underline cursor-pointer">
+                  {repo.repoName}
                 </span>
               </div>
+              <span className="text-sm ml-12 my-auto text-gray-500">
+                {repo.des}
+              </span>
               <div className="ml-6 text-gray-400 text-xs">
                 {moment(repo.created_at).fromNow()}
               </div>
             </Link>
 
-            <SettingsMenu repo={repo}/>
+            <TrashWithModal
+              repoName={repo.repoName}
+              repoPath={repo.repo_path}
+              key={idx}
+            />
           </li>
         ))}
       </ul>

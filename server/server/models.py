@@ -43,11 +43,12 @@ class UserFolders(models.Model):
 class RepositoryModel(models.Model):
     repoID = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     owner = models.CharField(blank=True, null=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
+    repoName = models.CharField(max_length=255, null=True, blank=True)
     repo_path = models.CharField(
         null=False,
         unique=True,
     )
+    des = models.CharField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

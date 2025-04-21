@@ -1,10 +1,12 @@
 import os
 import shutil
 import tempfile
+from typing import Optional
 import uuid
 import zipfile
 from django.conf import settings
 from django.db import transaction
+from django.forms import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -12,6 +14,7 @@ from rest_framework.response import Response
 
 from server.configs.dropbox.config import get_dropbox_service
 from server.models import FileModel, RepositoryModel, DirectoryModel
+from server.serializers.RepositorySerializer import RepositorySerializer
 from server.utils.ResponseBody import ResponseBody
 
 
@@ -23,24 +26,28 @@ def fetch_repo_list(user: str) -> dict:
 
     repo_list = []
     for repo in repos:
-        repo_data = {
-            "repoID": repo.repoID,
-            "repoName": repo.name,
-            "owner": (
-                repo.owner.username if hasattr(repo.owner, "username") else repo.owner
-            ),
-            "repo_path":repo.repo_path,
-            "created_at": repo.created_at,
-            "updated_at": repo.updated_at,
-        }
+        repo_data = RepositorySerializer(repo).data
         repo_list.append(repo_data)
 
     return {"repos": repo_list, "status": 200}
 
 
+def fetch_repo_metadata(repoID: str) -> dict:
+    if not repoID:
+        return {"message": "Repository ID is required", "status": 400}
+
+    try:
+        repo = RepositoryModel.objects.get(repoID=repoID)
+    except RepositoryModel.DoesNotExist:
+        return {"message": "Repository not found", "status": 404}
+
+    repo_data = RepositorySerializer(repo).data
+    return repo_data
+
+
 def fetch_repo(user: str, repo_name: str) -> dict:
     try:
-        repo = RepositoryModel.objects.get(name=repo_name, owner=user)
+        repo = RepositoryModel.objects.get(repoName=repo_name, owner=user)
     except RepositoryModel.DoesNotExist:
         return {"message": "Repository not found", "status": 404}
 
@@ -88,7 +95,7 @@ def fetch_repo(user: str, repo_name: str) -> dict:
     # Prepare the final response
     response_data = {
         "repoID": repo.repoID,
-        "repoName": repo.name,
+        "repoName": repo.repoName,
         "owner": repo.owner.username if hasattr(repo.owner, "username") else repo.owner,
         "structure": {"rootFiles": root_files, "directories": root_dirs},
         "status": 200,
@@ -107,7 +114,7 @@ def insert_repo_details(zip_file: zipfile.ZipFile, user: str, repo_name: str) ->
         zip_ref.extractall(temp_dir)
 
     # Create repository
-    repo = RepositoryModel.objects.create(name=repo_name, owner=user)
+    repo = RepositoryModel.objects.create(repoName=repo_name, owner=user)
 
     # Dictionary to track created directories and their models
     created_dirs = {}
@@ -160,3 +167,26 @@ def get_file_content(file_path: str) -> ResponseBody:
     except Exception as e:
         print(f"Error: {e}")
         return ResponseBody.build({"error": str(e)}, status=500)
+
+
+# if repo name is changed then only we change the repo path
+def updated_repo_details(
+    repoID: str,
+    newRepoName: Optional[str],
+    newRepoDes: Optional[str],
+    newRepoPath: Optional[str],
+):
+    try:
+        repo = RepositoryModel.objects.get(repoID=repoID)
+    except RepositoryModel.DoesNotExist:
+        return {"status": "error", "message": "Repository not found"}
+
+    if newRepoName:
+        repo.repoName = newRepoName
+        repo.repo_path = newRepoPath
+    if newRepoDes:
+        repo.des = newRepoDes
+
+    repo.save()
+    serializedRepo = RepositorySerializer(repo)
+    return serializedRepo.data

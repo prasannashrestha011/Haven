@@ -2,6 +2,7 @@ from importlib.metadata import files
 from io import BytesIO
 import os
 
+import traceback
 import zipfile
 
 from django.forms import model_to_dict
@@ -13,6 +14,7 @@ from server.configs.dropbox.config import get_dropbox_service
 from server.methods.RepoDatabaseHandler import Insert_Repo_Structure
 from server.methods.database.RepositoryDatabaseService import RepoDbService
 from server.models import RepositoryModel, UserModel, UserStorageReference
+from server.serializers.RepositorySerializer import RepositorySerializer
 from server.utils.ResponseBody import ResponseBody
 from server.utils.ZipWriters import Create_Zip_Object
 
@@ -97,7 +99,10 @@ class DropBoxService:
     # methods related to repository
 
     @staticmethod
-    def Init_Repo_Dir(repo_name: str, user_storage_ref: str, username: str) -> dict:
+    def Init_Repo_Dir(
+        repo_name: str, user_storage_ref: str, username: str, repo_des: str
+    ) -> dict:
+        # checking users storage reference
         is_storageRef_exists = RepoDbService.is_user_storage_ref_valid(user_storage_ref)
         if not is_storageRef_exists:
             return {"response": {"error": "storage reference not found"}, "status": 404}
@@ -108,21 +113,17 @@ class DropBoxService:
 
             repo_path = response.metadata.path_lower
             newRepo = RepositoryModel.objects.create(
-                owner=username, name=repo_name, repo_path=repo_path
+                owner=username, repoName=repo_name, repo_path=repo_path, des=repo_des
             )
-            json_response = {
-                "repoID": str(newRepo.repoID),
-                "owner": newRepo.owner,
-                "repoName": newRepo.name,
-                "repo_path": newRepo.repo_path,
-                "created_at": newRepo.created_at.isoformat(),
-                "updated_at": newRepo.updated_at.isoformat(),
-            }
-            return ResponseBody.build({"newRepo": json_response}, status=201)
+            serializedRepo = RepositorySerializer(newRepo).data
+            return ResponseBody.build({"newRepo": serializedRepo}, status=201)
 
         except dropbox.exceptions.ApiError as e:
+            err_message = traceback.format_exc(e)
+            print(err_message)
             # Handle the case where the folder already exists
             if e.error.is_path() and e.error.get_path().is_conflict():
+                print("Error")
                 return ResponseBody.build(
                     {"message": f"Folder '{folder_path}' already exists."}, status=400
                 )
@@ -168,9 +169,30 @@ class DropBoxService:
             is_deleted = RepoDbService.delete_repo(repo_path=repo_path)
             if not is_deleted:
                 return ResponseBody.build({"error": "Repository not found"}, status=404)
-            return ResponseBody.build({"message": "Repository deleted successfully"}, 200)
+            return ResponseBody.build(
+                {"message": "Repository deleted successfully"}, 200
+            )
 
         except dropbox.exceptions.ApiError as e:
             return ResponseBody.build(
                 {"error": f"Cloud storage Api error {str(e)}"}, status=500
             )
+
+    @staticmethod
+    def Update_Repo_Name(repo_path: str, new_repo_name: str):
+        try:
+            dbx = get_dropbox_service()
+
+            # Fetch the parent folder path
+            parent_folder_path = os.path.dirname(repo_path)
+            new_path = f"{parent_folder_path}/{new_repo_name}"
+
+            # Rename the folder in Dropbox
+            response = dbx.files_move_v2(repo_path, new_path)
+            repo_path = response.metadata.path_lower
+
+            return repo_path
+
+        except dropbox.exceptions.ApiError as e:
+            print("Update error ", e)
+            return ""
