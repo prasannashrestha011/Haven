@@ -8,10 +8,9 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 export default function Post() {
   const params=useParams()
-  const repo=params.repo 
+  const repo=params.code
   const dynamicParams: string[] = Array.isArray(params?.params) ? params.params : [];
 
-  const pathName = usePathname();
 
   const { userInfo } = useUserStore();
   const [fileRender, setFileRenderer] = useState<FileContentResponse>();
@@ -23,11 +22,11 @@ export default function Post() {
         console.log("StorageID not loaded yet, waiting...");
         return;
       }
-      
+     
       const filePath=`${repo}/${dynamicParams.join("/")}`
-  
+      console.log(filePath)
       const file_path = `/users/${userInfo.storageID}/${filePath}`;
-    
+      console.log(file_path)
       const contentBody = await FetchFileContent(file_path);
 
       if (!contentBody) {

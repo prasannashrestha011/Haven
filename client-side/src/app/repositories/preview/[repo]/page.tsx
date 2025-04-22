@@ -1,9 +1,11 @@
 import React from "react";
-import RepoFileExplorer from "./view/[...params]/clientContent";
-import { Code } from "lucide-react";
-import { DisplayRepoName, DisplayUserName } from "./clientContent";
+import RepoFileExplorer from "./clientContent";
+import { DisplayRepoDetails } from "../../components/DisplayRepoDetails";
+import CodeHandler from "../../components/CodeSection";
 
-const Page = () => {
+
+const RepoPreViewStructure = () => {
+   
   return (
     <div className="bg-gray-900 text-gray-200 min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -12,7 +14,7 @@ const Page = () => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-xl font-semibold flex items-center text-gray-200">
-                <DisplayUserName />/ <DisplayRepoName />
+                <DisplayRepoDetails />
               </h1>
             </div>
             <p className="text-gray-600 text-sm mt-1">
@@ -22,8 +24,8 @@ const Page = () => {
 
           <div className="flex border-b border-gray-200">
             <div className="flex items-center px-4 py-2 border-b-2 border-orange-500 font-medium text-sm">
-              <Code size={16} className="mr-2" />
-              Code
+        
+              <CodeHandler />
             </div>
           </div>
         </div>
@@ -40,4 +42,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default RepoPreViewStructure;

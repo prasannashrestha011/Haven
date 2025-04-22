@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import FileViewNavigator from "../../../components/FileViewNavigator";
+import FileViewNavigator from "../../components/FileViewNavigator";
 
 
 export default function FileViewLayout({ children }: { children: ReactNode }) {

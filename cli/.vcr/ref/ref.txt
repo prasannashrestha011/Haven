@@ -1,3 +1,0 @@
-[remote "origin"]
- [username=prasanna1234]
-  path=/users/qivsc98bqyemahx7asjk0w/node

@@ -1,4 +1,4 @@
-import usePathStore from '@/state/path_state';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -32,6 +32,10 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
     if(!repo){
       return <div>No repo content</div>
     }
+    if (!repo || !repo.structure) {
+      return <div>No repo content</div>;
+    }
+    
     const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
 
     const toggleDirectory = (dirID: string) => {
@@ -41,14 +45,14 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
     };
 
     return (
-        <div className="repo-explorer p-3 border border-black w-full ">
+        <div className="repo-explorer p-3  h-full w-full ">
             
             
             {/* Render root files */}
             {repo.structure.rootFiles.map(file => {
                
                 return(
-                  <FileItem key={file.fileID} dir={`${repo.repoName}/view/`} file={file} level={0}  />
+                  <FileItem key={file.fileID} dir={`${repo.repoName}/`} file={file} level={0}  />
                 )
             }
                
@@ -82,7 +86,7 @@ const DirectoryItem = ({
   toggleDirectory: (dirID: string) => void;
   parentPath?:string
 }) => {
-  const currentPath=`${parentPath}/view/${directory.dirName}/`
+  const currentPath=`${parentPath}/${directory.dirName}/`
   const isExpanded = expandedDirs.has(directory.dirID);
 
   return (
@@ -121,18 +125,15 @@ const DirectoryItem = ({
 
 const FileItem = ({ file, level,dir }: { file: File; level: number,dir:string }) => {
  
-  const {setPath} = usePathStore();
+
   const basePath = '/repositories'; // default base path
   
   const childPath = `${dir ? `${dir}` : ''}${file.fileName}`;
   const fullPath=`${basePath}/${childPath}`
-  useEffect(()=>{
-    console.log("runing file item")
-    setPath(childPath)
-  },[])
+
   return (
     <Link href={fullPath}>
-     <div className="" style={{ paddingLeft: `${level * 16}px` }} onClick={()=>setPath(childPath)} >
+     <div className="" style={{ paddingLeft: `${level * 16}px` }}  >
       <span className="icon">📄</span>
       {file.fileName}
       {file.filePath && <span className="file-path">{file.filePath}</span>}
