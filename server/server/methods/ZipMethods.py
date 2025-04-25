@@ -7,12 +7,14 @@ import zipfile
 from django.conf import settings
 from django.db import transaction
 from django.forms import model_to_dict
+import redis
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from server.configs.dropbox.config import get_dropbox_service
+from server.configs.redis.redis import cache_file_content, get_redis_client
 from server.models import FileModel, RepositoryModel, DirectoryModel
 from server.serializers.RepositorySerializer import RepositorySerializer
 from server.utils.ResponseBody import ResponseBody
@@ -150,8 +152,21 @@ def insert_repo_details(zip_file: zipfile.ZipFile, user: str, repo_name: str) ->
 
 
 def get_file_content(file_path: str) -> ResponseBody:
-    dbx = get_dropbox_service()
+
+    #
+    redis_client = get_redis_client()
+    file_name = os.path.basename(file_path)
+    # checking if file is already cached
+    cached_content: Optional[bytes] = redis_client.get(file_name)
+    if cached_content:
+        content = cached_content.decode("utf-8")
+        print("Getting cached file....")
+        return ResponseBody.build(
+            {"message": {"file_name": file_name, "content": content}}, status=200
+        )
+    #
     try:
+        dbx = get_dropbox_service()
         metadata, res = dbx.files_download(file_path)
         if res.status_code != 200:
             return ResponseBody.build(
@@ -159,8 +174,8 @@ def get_file_content(file_path: str) -> ResponseBody:
             )
         file_name = metadata.name
         content = res.content.decode("utf-8")
-        print(f"File metadata: {metadata}")
-        print(f"File content: {content}")
+        print("Caching file content on redis....")
+        cache_file_content(r=redis_client, file_name=file_name, file_content=content)
         return ResponseBody.build(
             {"message": {"file_name": file_name, "content": content}}, status=200
         )

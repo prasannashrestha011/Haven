@@ -19,20 +19,20 @@ class CustomTokenView(TokenObtainPairView):
         data["access"] = response.data.get("access")  # Include the access token
         data["refresh"] = response.data.get("refresh")  # Include the refresh token
         response.set_cookie(
-                key="access_token",
-                value=data["access"],
-                httponly=True,
-                secure=False, 
-                samesite="None",
-                max_age=7 * 24 * 60 * 60,
+            key="access_token",
+            value=data["access"],
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=7 * 24 * 60 * 60,
         )
 
         response.set_cookie(
-                key="refresh_token",
-                value=data["refresh"],
-                httponly=True,
-                secure=False,
-                samesite="None",
-                max_age=30 * 24 * 60 * 60,  # 30 days,
-            )
-        return response 
+            key="refresh_token",
+            value=data["refresh"],
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=30 * 24 * 60 * 60,  # 30 days,
+        )
+        return response

@@ -72,18 +72,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "root.wsgi.application"
 AUTH_USER_MODEL = "server.UserModel"
-CSRF_COOKIE_SECURE =False 
-SESSION_COOKIE_SECURE =False 
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SAMESITE = "None"
 CORS_ALLOWED_ORIGINS = [
-"http://127.0.0.1:3000",
+    "http://127.0.0.1:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "SIGNING_KEY":"custom_jwt_siging_key_for_now"
+    "SIGNING_KEY": "custom_jwt_siging_key_for_now",
 }
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -99,6 +99,13 @@ DATABASES = {
         "PASSWORD": "9843",
         "HOST": "localhost",  # or your remote database host
         "PORT": "5432",  # Default PostgreSQL port
+    }
+}
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
 
