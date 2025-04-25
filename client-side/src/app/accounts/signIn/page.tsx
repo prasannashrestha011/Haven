@@ -29,7 +29,7 @@ const LoginPage = () => {
       window.localStorage.setItem('refresh',loginResponse.refresh)
       window.localStorage.setItem('storageID',loginResponse.storageID)
       window.localStorage.setItem('username',loginResponse.username)
-      nav.push('/')
+      nav.push('/repositories')
     }
   };
 
