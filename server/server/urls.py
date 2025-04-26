@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from server.custom_methods.Custom_TokenView import CustomTokenView
 from server.views.Auth import AuthView
 from server.views.FileContentView import FileContentView
+from server.views.SearchView import SearchView
 from server.views.ZipView import ZipView
 from server.views.DropBoxView import dropbox_oauth, dropbox_oauth_callback
 
@@ -27,4 +28,7 @@ urlpatterns = [
     path(
         "dropbox/oauth/callback/", dropbox_oauth_callback, name="dropbox_oauth_callback"
     ),
+    # search methods
+    path("search/repo", SearchView.as_view({"get": "find_repositories"})),
+    path("search/user", SearchView.as_view({"get": "find_users"})),
 ]
