@@ -3,6 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from server.methods.search.search_methods import SearchMethod
 from server.serializers.RepositorySerializer import RepositorySerializer
+from server.serializers.UserSerializer import UserSerializer
 from server.utils.ResponseBody import ResponseBody
 
 
@@ -16,7 +17,7 @@ class SearchView(ViewSet):
             )
             return Response(responseBody["message"], status=responseBody["status"])
         search_result = SearchMethod.find_repo_by_name(repo_name=repo_name)
-        serialized_list = RepositorySerializer(search_result)
+        serialized_list = RepositorySerializer(search_result, many=True)
         return Response({"list": serialized_list.data}, status=200)
 
     def find_users(self, req: Request):
@@ -24,4 +25,5 @@ class SearchView(ViewSet):
         if not username:
             return Response({"error": "username not provided"}, status=400)
         search_result = SearchMethod.find_users(username=username)
-        return Response({"users": search_result}, status=200)
+        serialized_user = UserSerializer(search_result)
+        return Response({"users": serialized_user.data}, status=200)

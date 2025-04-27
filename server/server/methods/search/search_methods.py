@@ -13,7 +13,7 @@ class SearchMethod:
                 search=SearchVector("repoName", "des"),
                 rank=SearchRank(SearchVector("repoName", "des"), search_query),
             )
-            .filter(Q(repoName__icontains=repo_name))
+            .filter(Q(repoName__icontains=repo_name) | Q(des__icontains=repo_name))
             .order_by("-rank")
         )
 

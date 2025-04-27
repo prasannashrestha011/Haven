@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
+export interface UserStruct{
+  username:string
+}
 interface UserInfoState {
   username: string
   storageID: string
