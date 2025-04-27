@@ -5,9 +5,11 @@ import CreateRepoModal from '@/app/app_components/Models/CreateRepoModel'
 
 interface RepositoryHeaderProps {
     repoCount: number
+    username:string 
+    queryUsername:string
 }
 
-const RepositoryHeader = ({ repoCount }: RepositoryHeaderProps) => {
+const RepositoryHeader = ({ repoCount,username,queryUsername }: RepositoryHeaderProps) => {
     return (
         <div className="py-3 px-4 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
             <div>
@@ -16,7 +18,7 @@ const RepositoryHeader = ({ repoCount }: RepositoryHeaderProps) => {
             </div>
         
               
-                <CreateRepoModal/>
+               {username==queryUsername&& <CreateRepoModal/>}
        
         </div>
     )

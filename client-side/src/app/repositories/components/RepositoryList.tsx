@@ -7,13 +7,16 @@ import Link from "next/link";
 
 interface RepositoryListProps {
   repositories: RepoStruct[];
+  queryUsername:string
 }
 
 import SettingsMenu from "@/app/app_components/Models/SettingModel";
 
 import useSelectedRepoStore from "@/state/SelectedRepoState";
-const RepositoryList = ({ repositories }: RepositoryListProps) => {
+import useUserStore from "@/state/user_info_state";
+const RepositoryList = ({ repositories ,queryUsername}: RepositoryListProps) => {
   const {setSelectedRepo}=useSelectedRepoStore()
+  const {userInfo}=useUserStore()
   return (
     <div className="overflow-auto flex-1">
       <ul className="divide-y divide-gray-800">
@@ -38,10 +41,10 @@ const RepositoryList = ({ repositories }: RepositoryListProps) => {
                 {moment(repo.created_at).fromNow()}
               </div>
             </Link>
-
+            {userInfo?.username==queryUsername&&
             <div className="z-10">
             <SettingsMenu  repo={repo}/>
-            </div>
+            </div>}
           </li>
         ))}
       </ul>
