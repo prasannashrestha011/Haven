@@ -11,8 +11,9 @@ export default function renderSearchRepositoryList(repoList: RepoStruct[]) {
           <div className="flex h-20 justify-between items-start">
             <div className="flex-1">
               <h3 className="text-xl font-semibold text-blue-600 hover:underline">
-                <a href={`/${repo.owner}/${repo.repoName}`} className="flex items-center gap-2">
+                <a href={`/repositories/preview/${repo.repoName}`} className="flex items-center gap-2">
                   <BookOpen size={18} className="text-blue-500" />
+              
                   {repo.owner}/{repo.repoName}
                 </a>
               </h3>
