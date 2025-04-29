@@ -16,6 +16,8 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError("Password should be atleast 8 characters")
         if UserModel.objects.filter(username=attrs["username"]).exists():
             raise serializers.ValidationError("Username already exists")
+        if UserModel.objects.filter(email=attrs["email"]).exists():
+            raise serializers.ValidationError("Email already exists")
 
         attrs["password"] = make_password(attrs["password"])
         return attrs

@@ -42,6 +42,20 @@ class AuthView(ViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
+    @action(detail=False, methods=["GET"])
+    def fetch_user_details(self, req: Request):
+        try:
+            userID = req.query_params.get("userID")
+            if not userID:
+                return Response({"message": "userID not provided"}, status=400)
+            fetchedUser = AuthCrud.Fetch_User_Details(userID=userID)
+
+            if fetchedUser is None:
+                return Response({"error": "User not found"}, status=404)
+            return Response({"user": fetchedUser}, status=200)
+        except Exception as e:
+            return Response({"serverError:": str(e)}, status=500)
+
     @action(detail=False, methods=["DELETE"])
     def delete_user(self, req: Request):
         response = AuthCrud.delete_user(req.data)

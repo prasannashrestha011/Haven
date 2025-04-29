@@ -7,12 +7,13 @@ from server.utils.uuid_generator import generate_short_uuid
 
 # user model
 class UserModel(AbstractUser):
-    userId = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
+    userID = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    email = models.CharField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_login = models.DateTimeField(default=timezone.now)
-    folder_link = models.CharField(null=True, blank=True)
+    folder_ref = models.CharField(null=True, blank=True)
+    readme_ref = models.CharField(default="readme.md", null=False, blank=False)
 
     class Meta:
         db_table = "users"

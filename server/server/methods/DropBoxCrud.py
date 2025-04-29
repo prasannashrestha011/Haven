@@ -1,5 +1,5 @@
 from importlib.metadata import files
-from io import BytesIO
+
 import os
 
 import traceback
@@ -26,19 +26,24 @@ class DropBoxService:
 
     # This is triggered when user register their account
     @staticmethod
-    def Init_User_Storage(storage_ref: str) -> dict:
+    def Init_User_Storage(storage_ref: str, username: str) -> dict:
         try:
             dbx = get_dropbox_service()
             working_dir = DropBoxService.working_dir
-            user_folder = f"{working_dir}/{storage_ref}"
-            created_response = dbx.files_create_folder_v2(user_folder)
-            return {"status": "success", "message": "Inited user in the storage"}
+            user_folder_ref = f"{working_dir}/{storage_ref}"
+            dbx.files_create_folder_v2(user_folder_ref)
+            readme_path = DropBoxService.Create_README_file(
+                folder_path=user_folder_ref, username=username
+            )
+
+            return {
+                "success": True,
+                "folder_ref": user_folder_ref,
+                "readme_ref": readme_path,
+            }
         except dropbox.exceptions.ApiError as e:
             if e.error.is_path() and e.error.get_path().is_conflict():
-
-                return ResponseBody.build(
-                    {"message": f"Folder '{user_folder}' already exists."}, status=400
-                )
+                return {"success": False, "message": "Folder already exists"}
 
     # Triggers when account is deleted
     @staticmethod
@@ -196,3 +201,14 @@ class DropBoxService:
         except dropbox.exceptions.ApiError as e:
             print("Update error ", e)
             return ""
+
+    @staticmethod
+    def Create_README_file(folder_path: str, username: str):
+        dbx = get_dropbox_service()
+        readme_content = f"${username}"
+        readme_bytes = readme_content.encode("utf-8")
+        readme_path = f"{folder_path}/{username}.md"
+        dbx.files_upload(
+            readme_bytes, readme_path, mode=dropbox.files.WriteMode("overwrite")
+        )
+        return readme_path

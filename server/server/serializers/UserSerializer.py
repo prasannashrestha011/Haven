@@ -6,4 +6,11 @@ from server.models import UserModel
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ["userId", "username", "created_at"]
+        fields = [
+            "userID",
+            "username",
+            "created_at",
+            "updated_at",
+            "folder_ref",
+            "readme_ref",
+        ]

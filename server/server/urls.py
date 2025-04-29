@@ -13,6 +13,7 @@ urlpatterns = [
     path("auth/token", CustomTokenView.as_view()),
     path("auth/refresh", TokenRefreshView.as_view()),
     path("auth/register", AuthView.as_view({"post": "register_user"})),
+    path("auth/user", AuthView.as_view({"get": "fetch_user_details"})),
     path("auth/details", AuthView.as_view({"get": "fetch_user_repo_details"})),
     path("auth/delete", AuthView.as_view({"delete": "delete_user"})),
     # repo routes

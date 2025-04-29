@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password
 
 from server.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
 from server.utils.ResponseBody import ResponseBody
+from server.serializers.UserSerializer import UserSerializer
 
 
 class AuthCrud:
@@ -29,7 +30,14 @@ class AuthCrud:
             storage_reference = UserStorageReference.objects.create(user=user_model)
 
             # Initialize user folder (e.g., on Dropbox)
-            folder_id = DropBoxService.Init_User_Storage(storage_reference.storageID)
+            refs = DropBoxService.Init_User_Storage(
+                storage_reference.storageID, user_model.username
+            )
+            if refs["success"]:
+                print("Inserting references...")
+                user_model.folder_ref = refs["folder_ref"]
+                user_model.readme_ref = refs["readme_ref"]
+                user_model.save()
 
             return {
                 "response": {
@@ -43,6 +51,14 @@ class AuthCrud:
         except Exception as e:
             print(e)
             return {"response": {"error": e}, "status": 500}
+
+    def Fetch_User_Details(userID: str):
+        try:
+            user_model = UserModel.objects.get(userID=userID)
+            serialized_model = UserSerializer(user_model)
+            return serialized_model.data
+        except UserModel.DoesNotExist as e:
+            return None
 
     @staticmethod
     def Fetch_User_Repo_Reference(username: str):
@@ -78,7 +94,7 @@ class AuthCrud:
             if not is_authenticated:
                 return {"error": "Invalid username or password", "status": 401}
 
-            DropBoxService.Delete_User_Storage(auth_user.userId)
+            DropBoxService.Delete_User_Storage(auth_user.userID)
             auth_user.delete()
             return ResponseBody.build(
                 {"message": "User deleted successfully"}, status=200
