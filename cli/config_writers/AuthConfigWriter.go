@@ -41,7 +41,7 @@ func WriteConfig(config *structure.VCR_AuthBody) error {
 		return err
 	}
 	defer file.Close()
-	//providing indentation to the json file
+	// providing indentation to the json file
 	data, err := json.MarshalIndent(config, "", " ")
 	if err != nil {
 		fmt.Println("Error marshalling config to JSON:", err)
@@ -69,6 +69,7 @@ func IsRefConfigExists() bool {
 	fmt.Println("outside")
 	return true
 }
+
 func GetRefPath() (string, error) {
 	configs.LoadParentFolder()
 	configs.PathConfigs()
@@ -82,7 +83,7 @@ func GetRefPath() (string, error) {
 	lines := strings.Split(fileContent, "\n")
 	var remoteRefPath string
 	for _, line := range lines {
-		//this was indeed fucking necessary to match with the prefix
+		// this was indeed fucking necessary to match with the prefix
 		line = strings.TrimSpace(line)
 
 		if strings.HasPrefix(line, "path=") {
@@ -94,6 +95,7 @@ func GetRefPath() (string, error) {
 	}
 	return remoteRefPath, nil
 }
+
 func FetchUsernameFromRoot() (string, error) {
 	configDir := os.Getenv("HOME") + "/.vcr"
 	configFile := configDir + "/config.json"

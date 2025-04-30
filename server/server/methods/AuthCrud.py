@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from server.methods.DropBoxCrud import DropBoxService
-from server.models import UserModel, UserStorageReference
+from server.models import RepositoryModel, UserModel, UserStorageReference
 
 from django.contrib.auth.hashers import check_password
 
@@ -42,8 +42,7 @@ class AuthCrud:
             return {
                 "response": {
                     "message": "Account registered",
-                    "userId": user_model.userId,
-                    "storage_referenceID:": storage_reference.storageID,
+                    "userId": user_model.userID,
                 },
                 "status": 201,
             }
@@ -95,6 +94,7 @@ class AuthCrud:
                 return {"error": "Invalid username or password", "status": 401}
 
             DropBoxService.Delete_User_Storage(auth_user.userID)
+            RepositoryModel.objects.filter(owner=auth_user.username).delete()
             auth_user.delete()
             return ResponseBody.build(
                 {"message": "User deleted successfully"}, status=200

@@ -21,6 +21,7 @@ const UserInitializer = () => {
     if(!fetchedUser){
       console.log("No user details...")
       router.push("/accounts/signIn")
+      window.localStorage.removeItem("username")
       return
     }
     setUserInfo(fetchedUser)

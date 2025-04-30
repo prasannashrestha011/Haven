@@ -17,6 +17,7 @@ from server.models import RepositoryModel, UserModel, UserStorageReference
 from server.serializers.RepositorySerializer import RepositorySerializer
 from server.utils.ResponseBody import ResponseBody
 from server.utils.ZipWriters import Create_Zip_Object
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 load_dotenv()
 
@@ -136,7 +137,7 @@ class DropBoxService:
                 return ResponseBody.build({"message": str(e)}, status=500)
 
     @staticmethod
-    def Insert_Repo(zip_stream: zipfile.ZipFile, repo_path: str):
+    def Insert_Repo(zip_stream: InMemoryUploadedFile, repo_path: str):
         try:
             dbx = get_dropbox_service()
             is_repo_exists = RepoDbService.is_repo_path_valid(repo_path)
@@ -159,6 +160,7 @@ class DropBoxService:
             print(e)
             return ResponseBody.build({"Cloud storage Api error": str(e)}, status=400)
         except Exception as e:
+            print(e)
             return ResponseBody.build({"error": str(e)}, status=500)
 
     @staticmethod

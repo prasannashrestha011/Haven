@@ -9,6 +9,7 @@ export const fetchUserInfo = async (username: string): Promise<UserInfoState | n
     try {
         const response = await axios.get(apiUrl);
         if (response.status === 200) {
+            console.log(response.data.user)
             return response.data.user as UserInfoState;
         } else {
             console.error(`Unexpected response status: ${response.status}`);
