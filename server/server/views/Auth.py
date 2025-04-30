@@ -45,10 +45,10 @@ class AuthView(ViewSet):
     @action(detail=False, methods=["GET"])
     def fetch_user_details(self, req: Request):
         try:
-            userID = req.query_params.get("userID")
-            if not userID:
-                return Response({"message": "userID not provided"}, status=400)
-            fetchedUser = AuthCrud.Fetch_User_Details(userID=userID)
+            username = req.query_params.get("username")
+            if not username:
+                return Response({"message": "username not provided"}, status=400)
+            fetchedUser = AuthCrud.Fetch_User_Details(username=username)
 
             if fetchedUser is None:
                 return Response({"error": "User not found"}, status=404)

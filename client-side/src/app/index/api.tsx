@@ -13,11 +13,15 @@ interface LoginForm{
     username:string 
     password:string 
 }
+export interface LoginResponseData{
+  refresh:string 
+  access:string 
+  username:string 
+  storageID:string
+}
 interface LoginResponseType{
-    refresh:string 
-    access:string 
-    username:string 
-    storageID:string
+   data:LoginResponseData|string
+   success:boolean
 }
 const root_url=process.env.NEXT_PUBLIC_ROOT_URL
 export async function SubmitRegistrationForm(
@@ -54,15 +58,13 @@ export async function SubmitLoginForm(body: LoginForm): Promise<LoginResponseTyp
             return null;
         }
         console.log(response.data)
-        return response.data;
+        return {data:response.data as any ,success:true}
     } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
-            // Handle Axios-specific errors
-            console.error("Login request failed:", {
-                status: err.response?.status,
-                message: err.response?.data?.message || err.message,
-                code: err.code
-            });
+           const status=err.response?.status
+           const errMessage=err.response?.data.detail
+           console.log(errMessage)
+           return {data:errMessage,success:false}
         } else if (err instanceof Error) {
             // Handle other Error types
             console.error("Unexpected login error:", err.message);

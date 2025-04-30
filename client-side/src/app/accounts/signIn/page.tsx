@@ -1,5 +1,5 @@
 "use client";
-import { SubmitLoginForm } from "@/app/index/api";
+import { LoginResponseData, SubmitLoginForm } from "@/app/index/api";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -11,7 +11,7 @@ const LoginPage = () => {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const [error,setError]=useState<string>("")
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -22,13 +22,16 @@ const LoginPage = () => {
 
   const handleSubmit = async(e:React.FormEvent) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
+    setError("")
+   
     var loginResponse=await SubmitLoginForm(formData)
-    if(loginResponse){
-      window.localStorage.setItem('access',loginResponse?.access)
-      window.localStorage.setItem('refresh',loginResponse.refresh)
-      window.localStorage.setItem('storageID',loginResponse.storageID)
-      window.localStorage.setItem('username',loginResponse.username)
+    if(!loginResponse?.success){
+      setError(loginResponse?.data as string)
+      return
+    }
+    if(loginResponse?.success){
+      const {username}=loginResponse.data as LoginResponseData
+      window.localStorage.setItem('username',username)
       nav.push('/repositories')
     }
   };
@@ -180,7 +183,7 @@ const LoginPage = () => {
               </div>
             </div>
           </div>
-
+          {error&&<span className="text-red-500 Lexend-Regular w-full text-sm pb-3">{error}</span>}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
@@ -202,7 +205,7 @@ const LoginPage = () => {
               </a>
             </div>
           </div>
-
+             
           <button
             type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors flex items-center justify-center"

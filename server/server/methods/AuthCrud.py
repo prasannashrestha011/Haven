@@ -52,9 +52,9 @@ class AuthCrud:
             print(e)
             return {"response": {"error": e}, "status": 500}
 
-    def Fetch_User_Details(userID: str):
+    def Fetch_User_Details(username: str):
         try:
-            user_model = UserModel.objects.get(userID=userID)
+            user_model = UserModel.objects.get(username=username)
             serialized_model = UserSerializer(user_model)
             return serialized_model.data
         except UserModel.DoesNotExist as e:
