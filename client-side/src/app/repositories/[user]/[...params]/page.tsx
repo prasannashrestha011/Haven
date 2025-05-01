@@ -6,26 +6,27 @@ import useUserStore from "@/state/user_info_state";
 import LoadingState from "@/app/components/LoadingState";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import useProfileStore from "@/state/profileStore";
 export default function Post() {
   const params=useParams()
-  const repo=params.code
+  const repo=params.user
   const dynamicParams: string[] = Array.isArray(params?.params) ? params.params : [];
 
 
-  const { userInfo } = useUserStore();
+  const { profileInfo } = useProfileStore();
   const [fileRender, setFileRenderer] = useState<FileContentResponse>();
 
   useEffect(() => {
     const RenderFileContent = async () => {
       // Only proceed if storageID exists
-      if (!userInfo?.storageID) {
+      if (!profileInfo?.user.folder_ref) {
         console.log("StorageID not loaded yet, waiting...");
         return;
       }
      
       const filePath=`${repo}/${dynamicParams.join("/")}`
-      console.log(filePath)
-      const file_path = `/users/${userInfo.storageID}/${filePath}`;
+  
+      const file_path = `${profileInfo.user.folder_ref}/${filePath}`;
       console.log(file_path)
       const contentBody = await FetchFileContent(file_path);
 
@@ -37,7 +38,7 @@ export default function Post() {
     };
 
     RenderFileContent()
-  }, [userInfo]);
+  }, [profileInfo]);
   if (!fileRender) {
     return <LoadingState />;
   }

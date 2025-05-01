@@ -187,6 +187,7 @@ def get_file_content(file_path: str) -> ResponseBody:
 
 def update_readme_file(file_path: str, content: str):
     dbx = get_dropbox_service()
+    redis_client = get_redis_client()
     try:
         # Upload the updated content
         dbx.files_upload(
@@ -196,7 +197,9 @@ def update_readme_file(file_path: str, content: str):
         # Re-download the updated file to confirm and return content
         metadata, res = dbx.files_download(file_path)
         updated_content = res.content.decode("utf-8")
-
+        cache_file_content(
+            r=redis_client, file_name=metadata.name, file_content=updated_content
+        )
         return ResponseBody.build(
             {"message": {"file_name": metadata.name, "content": updated_content}},
             status=200,

@@ -20,19 +20,19 @@ export interface ProfileType{
   readme:ReadmeType
 }
 interface UserStore {
-  userInfo: UserInfoState | null
-  setUserInfo: (info: UserInfoState) => void
+  profileInfo: ProfileType | null
+  setProfileInfo: (info: ProfileType) => void
 }
 
-const useUserStore = create<UserStore>()(
+const useProfileStore = create<UserStore>()(
   persist(
     (set) => ({
-      userInfo: null,
-      setUserInfo: (info: UserInfoState) => set({ userInfo: info })
+        profileInfo: null,
+      setProfileInfo: (info: ProfileType) => set({ profileInfo: info })
     }),
     {
       name: 'user-storage',
     }
   )
 )
-export default useUserStore
+export default useProfileStore

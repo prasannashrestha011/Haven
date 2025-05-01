@@ -1,21 +1,24 @@
 "use client";
-import useUserStore from '@/state/user_info_state';
+
 import { usePathname,useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import {  FetchRepoStructure, Repository } from '../../[code]/[...params]/api';
-import { RepoExplorer } from '../../components/FileExplorer';
+import {  FetchRepoStructure, Repository } from '../../../repositories/[user]/[...params]/api';
+import { RepoExplorer } from '../../../repositories/components/FileExplorer';
+import useProfileStore from '@/state/profileStore';
 
 export const RepoFileExplorer = () => {
   const params=useParams()
-  const repo= params.repo || params.code || "";
+  const user=params.user as string
+  const repo=params.code||params.repo as string
   const [treeData, setTreeData] = useState<Repository>();
-  const { userInfo } = useUserStore();
+  const {profileInfo}=useProfileStore()
 
   const InitFileStructure = async () => {
-
-    if (!userInfo || !repo) return;
+    console.log("Running...")
+    console.log(repo)
+    if (!repo) return;
     try {
-      const structureData = await FetchRepoStructure(userInfo.username, repo as string);
+      const structureData = await FetchRepoStructure(user, repo as string);
       console.log(structureData);
       if (!structureData) return;
       setTreeData(structureData);
@@ -26,7 +29,7 @@ export const RepoFileExplorer = () => {
 
   useEffect(() => {
     InitFileStructure();
-  }, [userInfo,repo]);
+  }, [user,repo]);
 
   return (
     <div className=''>

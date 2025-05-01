@@ -1,10 +1,11 @@
 import React from 'react'
-import ProfileClientContent from './clientContent'
+import DisplayUserRepoList from './DisplayRepoList'
 
 const page = () => {
   return (
     <div>
-        <ProfileClientContent/>
+   
+        <DisplayUserRepoList/>
     </div>
   )
 }

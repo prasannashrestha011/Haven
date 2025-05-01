@@ -1,5 +1,5 @@
 import FileViewNavigator from "../components/FileViewNavigator";
-import RepoFileExplorer from "../preview/[repo]/clientContent";
+import RepoFileExplorer from "../../[user]/preview/[repo]/clientContent";
 
 
 export default function RepoLayout({
