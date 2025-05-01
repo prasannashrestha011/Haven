@@ -1,8 +1,12 @@
 import { UserInfoState } from '@/state/user_info_state';
 import axios from 'axios';
 
-
-export const fetchUserInfo = async (username: string): Promise<UserInfoState | null> => {
+interface FetchUserResponseStruct{
+    data:UserInfoState|null
+    err:string 
+    success:boolean
+}
+export const fetchUserInfo = async (username: string): Promise<FetchUserResponseStruct> => {
     
     const apiUrl = `${process.env.NEXT_PUBLIC_ROOT_URL}/auth/user?username=${username}`;
 
@@ -10,21 +14,22 @@ export const fetchUserInfo = async (username: string): Promise<UserInfoState | n
         const response = await axios.get(apiUrl);
         if (response.status === 200) {
             console.log(response.data.user)
-            return response.data.user as UserInfoState;
+            return {data:response.data.user as UserInfoState,success:true,err:""}
         } else {
             console.error(`Unexpected response status: ${response.status}`);
-            return null;
+            return {data:null,success:false,err:"Unexpected error"};
         }
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Axios error:', error.message);
+        
             if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
+               
+                return {data:null,err:error.response.data.error,success:false}
             }
         } else {
-            console.error('Unexpected error:', error);
+        
+            return {data:null,success:false,err:"Unexpected error"};
         }
-        return null;
+        return {data:null,success:false,err:"Unexpected error"};
     }
 };

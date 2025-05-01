@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from server.models import RepositoryModel
+
 
 class NewRepoSerializer(serializers.Serializer):
     repo_name = serializers.CharField(max_length=255, required=True, allow_blank=False)
@@ -14,9 +16,14 @@ class NewRepoSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 {"repo_name": "Repository name must be at least 3 characters long."}
             )
+
         if len(username.strip()) < 3:
             raise serializers.ValidationError(
                 {"username": "Username must be at least 3 characters"}
+            )
+        if RepositoryModel.objects.filter(owner=username, repoName=repo_name).exists():
+            raise serializers.ValidationError(
+                {"repo_name": "You already have a repository with this name."}
             )
 
         return attrs

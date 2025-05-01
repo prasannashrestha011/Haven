@@ -7,6 +7,7 @@ import zipfile
 from django.conf import settings
 from django.db import transaction
 from django.forms import model_to_dict
+import dropbox
 import redis
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -181,6 +182,26 @@ def get_file_content(file_path: str) -> ResponseBody:
         )
     except Exception as e:
         print(f"Error: {e}")
+        return ResponseBody.build({"error": str(e)}, status=500)
+
+
+def update_readme_file(file_path: str, content: str):
+    dbx = get_dropbox_service()
+    try:
+        # Upload the updated content
+        dbx.files_upload(
+            content.encode("utf-8"), file_path, mode=dropbox.files.WriteMode.overwrite
+        )
+
+        # Re-download the updated file to confirm and return content
+        metadata, res = dbx.files_download(file_path)
+        updated_content = res.content.decode("utf-8")
+
+        return ResponseBody.build(
+            {"message": {"file_name": metadata.name, "content": updated_content}},
+            status=200,
+        )
+    except Exception as e:
         return ResponseBody.build({"error": str(e)}, status=500)
 
 

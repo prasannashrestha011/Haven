@@ -1,12 +1,12 @@
 import traceback
-from django.conf import settings
-from django.db import transaction
+
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from server.custom_methods.Custom_PermissionClass import IsOwnerOfRepo
 from server.methods import DropBoxCrud
 from server.methods.DropBoxCrud import DropBoxService
 from server.methods.Repository.CRUD import handle_repo_update
@@ -18,13 +18,27 @@ from server.methods.ZipMethods import (
     insert_repo_details,
     updated_repo_details,
 )
+
 from server.serializers.NewRepoSerializer import NewRepoSerializer
 from server.serializers.UpdateRepoSerializer import UpdateRepoSerializer
+from rest_framework.exceptions import PermissionDenied
 
 
 class ZipView(ViewSet):
-    permission_classes = [AllowAny]
 
+    def get_permissions(self):
+        view_name = self.request.resolver_match.view_name
+        permission = IsOwnerOfRepo()
+        if view_name == "delete_repo":
+            print("Configuring permissionl.....")
+            return [IsAuthenticated(), IsOwnerOfRepo()]
+        if view_name == "init_repo":
+            if not permission.has_init_permission(self.request, self):
+                raise PermissionDenied("No,permission")
+            return [IsAuthenticated()]
+        return [IsAuthenticated()]
+
+    # for list of repository
     def get_repo_list(self, req: Request):
         username = req.query_params.get("username")
         if not username:
@@ -40,6 +54,7 @@ class ZipView(ViewSet):
                 {"message": "Repository name and user are required"}, status=400
             )
 
+    # for folder and file structure
     def get_repo_structure(self, req: Request):
         repo_name = req.query_params.get("repo")
         user = req.query_params.get("user")
@@ -56,7 +71,7 @@ class ZipView(ViewSet):
     def init_repo(self, req: Request):
         serializer = NewRepoSerializer(data=req.data)
         if not serializer.is_valid():
-            return Response(serializer.error_messages, status=400)
+            return Response(serializer.errors, status=400)
 
         repo_name = serializer.validated_data.get("repo_name")
         username = serializer.validated_data.get("username")
@@ -91,10 +106,6 @@ class ZipView(ViewSet):
         response = DropBoxService.Insert_Repo(zip_stream=repo_zip, repo_path=repo_path)
         return Response(response["response"], status=response["status"])
 
-    def delete_all_repos(self, req: Request):
-        response = DropBoxService.Delete_All_From_Working_Dir()
-        return Response(response, status=200)
-
     def commit_content_on_repo(self, req: Request):
         zip_file = req.FILES.get("zip")
         user = req.query_params.get("user")
@@ -111,10 +122,15 @@ class ZipView(ViewSet):
             status=response_data["status"],
         )
 
+    def delete_all_repos(self, req: Request):
+        response = DropBoxService.Delete_All_From_Working_Dir()
+        return Response(response, status=200)
+
     def delete_repo(self, req: Request):
         repo_path = req.query_params.get("repo_path")
         if not repo_path:
             return Response({"message": "Repo path not provided"}, status=400)
+
         response = DropBoxService.Delete_Repo(repo_path=repo_path)
         return Response(response["response"], status=response["status"])
 

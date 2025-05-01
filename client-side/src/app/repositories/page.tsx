@@ -1,12 +1,12 @@
-import React from 'react'
-import RepoclientContent from './clientContent'
+import React from "react";
+import RepoclientContent from "./clientContent";
 
 const page = () => {
   return (
     <div>
-      <RepoclientContent/>
+      <span>No page found</span>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
