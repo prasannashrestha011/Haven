@@ -1,6 +1,6 @@
 
 "use client"
-import LoadingState, { ErrorState, EmptyState } from '@/app/components/LoadingState'
+import LoadingState, { ErrorState, EmptyState } from '@/app/ui_components/LoadingState'
 import { useRepoListStore } from '@/state/repoListStore'
 import useUserStore from '@/state/user_info_state'
 import Sidebar from '../components/Sidebar'

@@ -11,7 +11,8 @@ import { Edit } from "lucide-react";
 import { useRepoListStore } from "@/state/repoListStore";
 import useUserStore from "@/state/user_info_state";
 import toast from "react-hot-toast";
-import { RepoStruct, SubmitRepoUpdate } from "@/app/repositories/api";
+import { RepoStruct, SubmitRepoUpdate } from "@/app/[user]/repositories/api";
+
 
 export default function UpdateRepoModal({ repo }: { repo: RepoStruct }) {
   const [open, setOpen] = useState(false);

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Modal, Box, Typography, TextField, Button, Stack } from "@mui/material";
 import { Delete, Trash2 } from "lucide-react";
-import { SubmitRepoDeletion } from "@/app/repositories/api";
+
 import useUserStore from "@/state/user_info_state";
 import toast from "react-hot-toast";
 import { useRepoListStore } from "@/state/repoListStore";
+import { SubmitRepoDeletion } from "@/app/[user]/repositories/api";
 
 export default function TrashWithModal({repoName,repoPath}:{repoName:string,repoPath:string}) {
   const [open, setOpen] = useState(false);

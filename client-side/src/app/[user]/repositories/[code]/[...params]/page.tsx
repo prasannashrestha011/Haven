@@ -3,7 +3,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FetchFileContent, FileContentResponse } from "./api";
 import useUserStore from "@/state/user_info_state";
-import LoadingState from "@/app/components/LoadingState";
+import LoadingState from "@/app/ui_components/LoadingState";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import useProfileStore from "@/state/profileStore";

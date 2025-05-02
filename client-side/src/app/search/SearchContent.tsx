@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { FetchSearchedRepository } from './apis'
 import { RepoStruct } from '../repositories/api'
 import { UserStruct } from '@/state/user_info_state'
-import LoadingState from '../components/LoadingState'
+import LoadingState from '../ui_components/LoadingState'
 import renderSearchRepositoryList from './search_types/RepositoryResults'
 
 const SearchContent = () => {

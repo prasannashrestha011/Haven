@@ -1,6 +1,6 @@
 
 "use client"
-import LoadingState, { ErrorState, EmptyState } from '@/app/components/LoadingState'
+import LoadingState, { ErrorState, EmptyState } from '@/app/ui_components/LoadingState'
 import { useRepoListStore } from '@/state/repoListStore'
 import useUserStore from '@/state/user_info_state'
 
@@ -10,11 +10,11 @@ import {Toaster} from 'react-hot-toast'
 
 
 import {  useParams, useSearchParams } from 'next/navigation'
-import { GetRepositoryList } from '@/app/repositories/api'
-import RepositoryHeader from '@/app/repositories/components/RepositoryHeader'
-import RepositoryList from '@/app/repositories/components/RepositoryList'
-import SortBar from '@/app/repositories/components/SortBar'
-import Sidebar from '@/app/repositories/components/Sidebar'
+import { GetRepositoryList } from '../../repositories/api'
+import RepositoryHeader from '../../repositories/components/RepositoryHeader'
+import RepositoryList from '../../repositories/components/RepositoryList'
+import SortBar from '../../repositories/components/SortBar'
+
 
 const DisplayUserRepoList = () => {
     const params=useParams()

@@ -2,7 +2,7 @@
 import { Input } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
-
+import { Search } from 'lucide-react'
 const SearchInput = () => {
   const router=useRouter()
   const [search,setSearch]=useState<string>("")
@@ -16,13 +16,14 @@ const SearchInput = () => {
     router.push(url)
   }
     return (
-    <div className='bg-gray-950 py-1 border-b border-gray-800'>
-        <form onSubmit={handleSearchSubmission} className='flex justify-center items-center'>
+    <div className=' py-1 flex justify-end'>
+        <form onSubmit={handleSearchSubmission} className='max-w-64 flex items-center gap-1'>
+          <Search className='text-amber-50'/>
         <Input value={search} onChange={handleSearchChange}
         placeholder='search'
         className='bg-gray-800 p-1 
         px-4
-        w-5/12 rounded-md text-slate-50' style={{color:'white'}}/>
+       rounded-sm text-slate-50' style={{color:'white'}} sx={{height:'1.8rem'}}/>
         </form>
     </div>
   )

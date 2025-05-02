@@ -2,9 +2,10 @@
 
 import { usePathname,useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import {  FetchRepoStructure, Repository } from '../../../repositories/[user]/[...params]/api';
-import { RepoExplorer } from '../../../repositories/components/FileExplorer';
+
 import useProfileStore from '@/state/profileStore';
+import { FetchRepoStructure } from '../../repositories/[code]/[...params]/api';
+import { Repository, RepoExplorer } from '../../repositories/components/FileExplorer';
 
 export const RepoFileExplorer = () => {
   const params=useParams()

@@ -3,26 +3,8 @@ import React, { useState, MouseEvent } from 'react'
 import useUserStore from '@/state/user_info_state'
 import { useParams } from 'next/navigation'
 import useSelectedRepoStore from "@/state/SelectedRepoState"
-import { 
-  Box, 
-  Button, 
-  Typography, 
-  IconButton,
-  Tooltip,
-  Snackbar,
-  Alert,
-  Popper,
-  Paper,
-  ClickAwayListener,
-  PopperPlacementType
-} from '@mui/material'
-import { Copy, X } from 'lucide-react'
 
-// Define interfaces for your component props and state if needed
-interface UserInfo {
-  username?: string;
-  // Add other properties as needed
-}
+
 
 interface SelectedRepo {
   repoName?: string;

@@ -1,8 +1,11 @@
 import React from 'react'
+import UpdateReadme from './UpdateReadme'
 
 const page = () => {
   return (
-    <div>page</div>
+
+        <UpdateReadme/>
+  
   )
 }
 

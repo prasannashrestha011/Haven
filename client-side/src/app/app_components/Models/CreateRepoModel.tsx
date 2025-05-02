@@ -9,9 +9,10 @@ import {
 } from "@mui/material";
 import { FolderPlus } from "lucide-react";
 import { useRepoListStore } from "@/state/repoListStore";
-import { SubmitNewRepo } from "@/app/repositories/api";
+
 import useUserStore from "@/state/user_info_state";
 import toast from "react-hot-toast";
+import { SubmitNewRepo } from "@/app/[user]/repositories/api";
 
 export default function CreateRepoModal() {
   const [open, setOpen] = useState(false);

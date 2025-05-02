@@ -3,9 +3,7 @@ import ProfileClientContent from './clientContent'
 
 const page = () => {
   return (
-    
         <ProfileClientContent/>
-    
   )
 }
 

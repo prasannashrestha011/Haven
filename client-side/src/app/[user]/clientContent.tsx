@@ -1,11 +1,8 @@
 "use client"
 import { useParams, useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
+import React from 'react'
 
-import {  FileText, Link as LinkIcon } from 'lucide-react'
-import LoadingState from '@/app/components/LoadingState'
+import LoadingState from '@/app/ui_components/LoadingState'
 
 import useProfileStore from '@/state/profileStore'
 import OverViewDisplay from './profileComponents/tabs/OverViewDisplay'
@@ -34,9 +31,12 @@ const ProfileClientContent = () => {
  
 
   return (
-    <div className="w-full bg-gray-900 min-h-screen text-slate-50">
+    <div className="w-full bg-gray-900 min-h-screen text-slate-50 flex p-5">
+        <DisplayProfileDetails/>
+      <div className='flex-1'>
       {tab==null&&<OverViewDisplay/>}
       {tab=="repo"&&<DisplayUserRepoList/>}
+      </div>
     </div>
   )
 }

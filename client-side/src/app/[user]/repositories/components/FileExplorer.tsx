@@ -52,7 +52,7 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
             {repo.structure.rootFiles.map(file => {
                
                 return(
-                  <FileItem key={file.fileID} dir={`${repo.repoName}/`} file={file} level={0}  />
+                  <FileItem key={file.fileID} dir={`${repo.owner}/repositories/${repo.repoName}/`} file={file} level={0}  />
                 )
             }
                
@@ -66,7 +66,7 @@ export const RepoExplorer = ({ repo }: { repo: Repository }) => {
                     level={0}
                     expandedDirs={expandedDirs}
                     toggleDirectory={toggleDirectory}
-                    parentPath={`${repo.repoName}`}
+                    parentPath={`${repo.owner}/repositories/${repo.repoName}`}
                 />
             ))}
         </div>
@@ -126,10 +126,10 @@ const DirectoryItem = ({
 const FileItem = ({ file, level,dir }: { file: File; level: number,dir:string }) => {
  
 
-  const basePath = '/repositories'; // default base path
+
   
   const childPath = `${dir ? `${dir}` : ''}${file.fileName}`;
-  const fullPath=`${basePath}/${childPath}`
+  const fullPath=`/${childPath}`
 
   return (
     <Link href={fullPath}>

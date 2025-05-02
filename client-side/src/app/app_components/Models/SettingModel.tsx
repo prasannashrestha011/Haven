@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Settings, Delete, Edit } from 'lucide-react';
-import { RepoStruct } from '@/app/repositories/api';
-import CreateRepoModal from './CreateRepoModel';
+
 import UpdateRepoModal from './UpdateRepoModel';
 import TrashWithModal from './DeleteRepoModel';
+import { RepoStruct } from '@/app/[user]/repositories/api';
 
 export default function SettingsMenu({ repo }: { repo: RepoStruct }) {
   const [menuOpen, setMenuOpen] = useState(false);

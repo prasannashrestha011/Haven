@@ -1,7 +1,7 @@
 import React from "react";
 import RepoFileExplorer from "./clientContent";
-import { DisplayRepoDetails } from "../../../repositories/components/DisplayRepoDetails";
-import CodeHandler from "../../../repositories/components/CodeSection";
+import CodeHandler from "../../repositories/components/CodeSection";
+import { DisplayRepoDetails } from "../../repositories/components/DisplayRepoDetails";
 
 
 const RepoPreViewStructure = () => {

@@ -1,5 +1,6 @@
 import useProfileStore from '@/state/profileStore'
-import { FileText } from 'lucide-react'
+import { Edit, FileText } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -21,13 +22,20 @@ const OverViewDisplay = () => {
             
             {/* Pinned Section */}
             <div className="mb-8">
-              <h2 className="text-base text-gray-400 font-medium mb-2">README</h2>
+              {/**header */}
+             
+                  <span className="text-base text-gray-400 font-medium " >README</span>
+                 
+              
               
               {/* README Card */}
               <div className="bg-gray-800 border border-gray-700 rounded-md overflow-hidden">
-                <div className="flex items-center bg-gray-800 p-3 border-b border-gray-700">
-                  <FileText className="w-4 h-4 mr-2 text-gray-400" />
-                  <span className="font-medium text-gray-200">{profileInfo.readme.file_name || 'README.md'}</span>
+                <div className="flex items-center justify-between bg-gray-800 p-3 border-b border-gray-700">
+                 <section className='flex items-center '>
+                 <FileText className="w-4 h-4 mr-2 text-gray-400" />
+                 <span className="font-medium text-gray-200">{profileInfo.readme.file_name || 'README.md'}</span>
+                 </section>
+                  <Link href={`/${profileInfo.user.username}/update`}><Edit/></Link>
                 </div>
                 
                 <div className="p-4 bg-gray-800 prose prose-invert max-w-none prose-headings:text-gray-200 prose-a:text-blue-400">
