@@ -1,0 +1,3 @@
+[remote "origin"]
+ [username=prasanna1234]
+  path=/users/jy1evu9zqi2ytr5pc68jyw/test

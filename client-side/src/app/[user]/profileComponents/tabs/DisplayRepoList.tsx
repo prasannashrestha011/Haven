@@ -14,6 +14,7 @@ import { GetRepositoryList } from '../../repositories/api'
 import RepositoryHeader from '../../repositories/components/RepositoryHeader'
 import RepositoryList from '../../repositories/components/RepositoryList'
 import SortBar from '../../repositories/components/SortBar'
+import CreateRepoModal from '@/app/app_components/Models/CreateRepoModel'
 
 
 const DisplayUserRepoList = () => {
@@ -79,9 +80,12 @@ const DisplayUserRepoList = () => {
     }
     
     return (
-        <div className="w-full h-screen bg-gray-900 text-gray-100 flex">
+        <div className="w-full h-screen bg-gray-900 text-gray-100 flex flex-col">
+            <div className='flex justify-end'>
+            <CreateRepoModal/>
+            </div>
             <Toaster position='top-center'/>
-           
+            
             
             <div className="flex-1 overflow-hidden flex flex-col">
                 <RepositoryHeader repoCount={repoList.length} queryUsername={username} username={userInfo?.username as string} />

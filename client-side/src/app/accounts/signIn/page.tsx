@@ -32,7 +32,7 @@ const LoginPage = () => {
     if(loginResponse?.success){
       const {username}=loginResponse.data as LoginResponseData
       window.localStorage.setItem('username',username)
-      nav.push('/repositories')
+      nav.push(`/${username}`)
     }
   };
 

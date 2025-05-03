@@ -15,11 +15,12 @@ import SettingsMenu from "@/app/app_components/Models/SettingModel";
 import useSelectedRepoStore from "@/state/SelectedRepoState";
 import useUserStore from "@/state/user_info_state";
 import { useParams } from "next/navigation";
+import useProfileStore from "@/state/profileStore";
 const RepositoryList = ({ repositories ,queryUsername}: RepositoryListProps) => {
   const params=useParams()
   const user=params.user
   const {setSelectedRepo}=useSelectedRepoStore()
-  const {userInfo}=useUserStore()
+  const {profileInfo}=useProfileStore()
   return (
     <div className="overflow-auto flex-1">
       <ul className="divide-y divide-gray-800">
@@ -44,7 +45,7 @@ const RepositoryList = ({ repositories ,queryUsername}: RepositoryListProps) => 
                 {moment(repo.created_at).fromNow()}
               </div>
             </Link>
-            {userInfo?.username==queryUsername&&
+            {profileInfo?.user?.username==queryUsername&&
             <div className="z-10">
             <SettingsMenu  repo={repo}/>
             </div>}

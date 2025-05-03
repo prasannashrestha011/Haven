@@ -13,11 +13,12 @@ const DisplayProfileDetails = () => {
       const fetchUser = async () => {
       
           const response = await fetchProfileInfo(user)
-      
+        
           if (response.data &&response.success) {
             console.log("Your fetched user ffff", response.data)
             setProfileInfo(response.data)
           }
+          
         
       }
       useEffect(()=>{

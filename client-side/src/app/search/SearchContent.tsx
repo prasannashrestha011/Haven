@@ -2,10 +2,11 @@
 import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FetchSearchedRepository } from './apis'
-import { RepoStruct } from '../repositories/api'
+
 import { UserStruct } from '@/state/user_info_state'
 import LoadingState from '../ui_components/LoadingState'
 import renderSearchRepositoryList from './search_types/RepositoryResults'
+import { RepoStruct } from '../[user]/repositories/api'
 
 const SearchContent = () => {
     const searchParams=useSearchParams()
@@ -30,7 +31,7 @@ const SearchContent = () => {
     
     useEffect(()=>{
         SubmitSearchRequest()
-    },[q,type,searchResult])
+    },[q,type])
     return (
     <div className='bg-[#0D1117] h-screen'>
         {searchResult===undefined?(
