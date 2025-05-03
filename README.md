@@ -2,6 +2,7 @@
 
 # Tech stack
 [![Skills](https://skillicons.dev/icons?i=nextjs,django,postgres,redis)]()
+
 # HVN Commands
 
 | Command                      | Description                                      |
@@ -14,5 +15,6 @@
 | `hvn remote`                 | Display Remote path                              |
 | `hvn --help`                 | Lists all the commands and their description     |
 
-
-.vcr.ignore(file)->for ignoring files and directories
+### .vcr.ignore(file)
+- Used to specify files and directories to be ignored by `.vcr` (similar to `.gitignore`).
+- **Example:** Add `node_modules/` to exclude it from version control.
